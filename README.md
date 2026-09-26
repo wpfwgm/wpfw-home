@@ -10,7 +10,7 @@ On the Squarespace page, in a single code block:
 ```
 
 `data-wpfw-home` takes `page`, or any one band on its own: `hero`, `missed`,
-`signup`, `events`, `news`, `people`. More than one may sit on the same page;
+`signup`, `events`, `news`, `people`, `app`, `sustain`. More than one may sit on the same page;
 the script is only ever loaded once.
 
 The attribute is `data-wpfw-home`, not `data-wpfw`, deliberately. The calendar
@@ -28,6 +28,8 @@ submit, station or upcoming"* on the homepage.
 | `events` | night | `wpfwgm.github.io/wpfw-calendar-feed/events.json` |
 | `news` | paper | `/news?format=json` — same origin |
 | `people` | night | `wpfwgm.github.io/wpfw-archive-data/archive.json` |
+| `app` | paper | nothing — static |
+| `sustain` | night | nothing — static |
 
 Every feed is already public and CORS-open. Nothing is proxied and no key is
 held here. Audio streams straight off `archive.wpfwfm.org`, because an
@@ -77,6 +79,22 @@ scrolls the whole document sideways.
 when its feed cannot be read. The bundle watches for that and takes the
 section with it, so a failed feed leaves no eyebrow and headline stranded
 over empty space.
+
+## The amount buttons on `sustain`
+
+They do not carry the chosen amount to the pledge form, and the link does not
+pretend they do. Tested: `pledge.wpfwfm.org/index.php?pledge_amt=5000` and
+`?pledge_amt=1000` both land on the form with $25 selected. The form ignores
+the query string.
+
+$25 is the default here because it is the form's default too, so the button
+most people press is the one that matches. Anyone picking $10 or $50 picks it
+again on the form.
+
+The fix is on the pledge side. The form's radios are `pledge_amt` with values
+in **cents** — 1000, 1500, 2000, 2500, 3000, 5000 — and `payhow` is `2` for
+monthly, `0` for one time. If `index.php` ever reads those two off the query
+string, set `PREFILL = true` in `src/sustain.html` and rebuild.
 
 ## Two things it does not do
 
