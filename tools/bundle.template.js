@@ -128,12 +128,21 @@
   function fitBleed(host) {
     var bands = host.querySelectorAll('.wh-band');
     if (!bands.length) return;
+
+    /* Measure first, and refuse to act on a nonsense reading. A page laid
+       out at zero width -- a hidden tab, a display:none ancestor, an
+       iframe that has not been given a size yet -- would otherwise have
+       every band pinned to width:0 and the homepage would be blank. Seen
+       exactly that. Leave the bands alone and try again when the page has
+       a width to measure. */
+    var docW = document.documentElement.clientWidth;
+    if (!docW || docW < 1) return;
+
     for (var i = 0; i < bands.length; i++) {
       bands[i].style.marginLeft = '0';
       bands[i].style.width = 'auto';
     }
     var left = host.getBoundingClientRect().left;
-    var docW = document.documentElement.clientWidth;
     for (var j = 0; j < bands.length; j++) {
       bands[j].style.marginLeft = (-left) + 'px';
       bands[j].style.width = docW + 'px';
@@ -267,12 +276,21 @@
   function bleed(host) {
     fitBleed(host);
     var t;
-    window.addEventListener('resize', function () {
-      clearTimeout(t);
-      t = setTimeout(function () { fitBleed(host); }, 120);
-    });
+    function again() { clearTimeout(t); t = setTimeout(function () { fitBleed(host); }, 120); }
+
+    window.addEventListener('resize', again);
     /* Images and fonts land after mount and can move the host sideways. */
-    window.addEventListener('load', function () { fitBleed(host); });
+    window.addEventListener('load', again);
+    /* A tab mounted while hidden has no width to measure, so the sizing is
+       skipped above and has to happen when the tab is looked at. */
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) again();
+    });
+    /* Belt and braces for the case where none of those ever fire: the host
+       changing size is the signal that the page finally has a layout. */
+    if (typeof ResizeObserver === 'function') {
+      try { new ResizeObserver(again).observe(document.documentElement); } catch (e) {}
+    }
   }
 
   function mount() {
