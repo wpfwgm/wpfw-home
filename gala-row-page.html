@@ -1,0 +1,176 @@
+<title>Gala Row</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Bitter:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --ink:#0C0A09; --panel:#14100E; --fg:#EFE7DC; --dim:#C4B7A8; --mute:#8E8074;
+  --rule:#2E2520; --red:#C81210; --red-lt:#F5463B; --brass:#C9973F;
+  --head:"Young Serif",Georgia,serif; --body:"Bitter",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ink);color:var(--fg);font-family:var(--body);line-height:1.6}
+.wrap{max-width:1000px;margin-inline:auto;padding-inline:20px;padding-block:44px 64px}
+h1{font-family:var(--head);font-weight:400;font-size:clamp(26px,4vw,38px);line-height:1.1;margin:0 0 10px}
+.lede{color:var(--dim);margin:0 0 30px;max-width:62ch}
+.step{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);margin-bottom:10px}
+.box{background:var(--panel);border:1px solid var(--rule);border-top:3px solid var(--red);padding:22px;margin-bottom:34px}
+textarea{
+  width:100%;height:120px;resize:vertical;
+  background:#080606;color:var(--dim);border:1px solid var(--rule);
+  font-family:var(--mono);font-size:11px;line-height:1.7;padding:13px;
+  white-space:pre;overflow:auto;
+}
+textarea:focus{outline:none;border-color:var(--red)}
+.bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px}
+button{
+  border:none;background:var(--red);color:#fff;cursor:pointer;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;
+  padding:13px 22px;transition:background .15s ease;
+}
+button:hover{background:var(--red-lt)}
+button.ghost{background:transparent;border:1px solid var(--rule);color:var(--fg)}
+button.ghost:hover{background:#1C1613}
+.said{font-family:var(--mono);font-size:11px;color:var(--brass)}
+ol{margin:0;padding-left:20px;color:var(--dim);font-size:15px}
+ol li{margin-bottom:7px}
+ol b{color:var(--fg);font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{
+  text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--mute);font-weight:500;
+  padding:0 10px 9px 0;border-bottom:1px solid var(--rule);
+}
+td{padding:9px 10px 9px 0;border-bottom:1px solid #1A1512;vertical-align:top}
+tr.off td{color:var(--mute)}
+.col{font-family:var(--mono);font-size:11px;color:var(--brass);width:42px}
+tr.off .col{color:#5E534A}
+.fld{font-family:var(--mono);font-size:11px;color:var(--dim);width:150px}
+tr.off .fld{color:var(--mute)}
+.val{color:var(--fg)}
+tr.off .val{color:#5E534A}
+.blank{font-family:var(--mono);font-size:10.5px;color:#4F453D}
+.scroll{overflow-x:auto}
+.note{
+  font-family:var(--mono);font-size:10.5px;line-height:1.7;color:var(--brass);
+  background:rgba(201,151,63,.08);border-left:2px solid #7A5E2A;
+  padding:11px 14px;margin-top:26px;
+}
+@media (max-width:560px){ .fld{width:auto} }
+</style>
+
+<div class="wrap">
+  <h1>WPFW 50th Anniversary Gala</h1>
+  <p class="lede">One row for the <b>Submissions</b> tab of Social Justice Calendar &mdash; Submissions. Fifty columns, A through AX, in the order the sheet has them.</p>
+
+  <div class="box">
+    <div class="step">Step one &middot; copy</div>
+    <textarea id="row" readonly spellcheck="false"></textarea>
+    <div class="bar">
+      <button id="copy" type="button">Copy the row</button>
+      <button id="sel" class="ghost" type="button">Select all</button>
+      <span class="said" id="said"></span>
+    </div>
+  </div>
+
+  <div class="box" style="border-top-color:var(--brass)">
+    <div class="step">Step two &middot; paste</div>
+    <ol>
+      <li>Open the sheet and go to the <b>Submissions</b> tab.</li>
+      <li>Click the first <b>empty cell in column A</b> &mdash; not a cell further right, or the columns shift.</li>
+      <li>Paste. Sheets splits on the tabs and fills A through AX.</li>
+      <li>Check <b>AS</b> reads <b>TRUE</b>. That is the flag the homepage filters on.</li>
+    </ol>
+  </div>
+
+  <div class="step">What is in it &middot; 29 filled, 21 left empty</div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Col</th><th>Field</th><th>Value</th></tr></thead>
+      <tbody><tr class="on"><td class="col">A</td><td class="fld">id</td><td class="val">wpfw-20260926-50TH</td></tr>
+        <tr class="on"><td class="col">B</td><td class="fld">submitted_at</td><td class="val">2026-09-26T15:00:00-04:00</td></tr>
+        <tr class="on"><td class="col">C</td><td class="fld">status</td><td class="val">Published</td></tr>
+        <tr class="off"><td class="col">D</td><td class="fld">flags</td><td class="val"><span class="blank">empty</span></td></tr>
+        <tr class="on"><td class="col">E</td><td class="fld">title</td><td class="val">WPFW 50th Anniversary Gala</td></tr>
+        <tr class="on"><td class="col">F</td><td class="fld">organization</td><td class="val">WPFW</td></tr>
+        <tr class="on"><td class="col">G</td><td class="fld">short_description</td><td class="val">An evening honoring five decades of community-powered radio: music, guest speakers, special tributes, and the people who have kept 89.3 on the air sin&hellip;</td></tr>
+        <tr class="on"><td class="col">H</td><td class="fld">full_description</td><td class="val">WPFW turns fifty on February 28, 2027, and this is the night the station marks it. An evening of music, guest speakers and special tributes at Martin&&hellip;</td></tr>
+        <tr class="on"><td class="col">I</td><td class="fld">start_datetime</td><td class="val">2027-05-02T00:00:00-04:00</td></tr>
+        <tr class="off"><td class="col">J</td><td class="fld">end_datetime</td><td class="val"><span class="blank">empty</span></td></tr>
+        <tr class="on"><td class="col">K</td><td class="fld">all_day</td><td class="val">TRUE</td></tr>
+        <tr class="on"><td class="col">L</td><td class="fld">repeat_rule</td><td class="val">none</td></tr>
+        <tr class="off"><td class="col">M</td><td class="fld">repeat_until</td><td class="val"><span class="blank">empty</span></td></tr>
+        <tr class="on"><td class="col">N</td><td class="fld">venue_name</td><td class="val">Martin&#x27;s Crosswinds</td></tr>
+        <tr class="off"><td class="col">O</td><td class="fld">street_address</td><td class="val"><span class="blank">empty</span></td></tr>
+        <tr class="on"><td class="col">P</td><td class="fld">city</td><td class="val">Greenbelt</td></tr>
+        <tr class="on"><td class="col">Q</td><td class="fld">state</td><td class="val">MD</td></tr>
+        <tr class="off"><td class="col">R</td><td class="fld">zip</td><td class="val"><span class="blank">empty</span></td></tr>
+        <tr class="on"><td class="col">S</td><td class="fld">online_url</td><td class="val">https://www.wpfwdc.org/50th-anniversary</td></tr>
+        <tr class="on"><td class="col">T</td><td class="fld">cost_type</td><td class="val">paid</td></tr>
+        <tr class="off"><td class="col">U</td><td class="fld">cost_amount</td><td class="val"><span class="blank">empty</span></td></tr>
+        <tr class="off"><td class="col">V</td><td class="fld">ticket_url</td><td class="val"><span class="blank">empty</span></td></tr>
+        <tr class="on"><td class="col">W</td><td class="fld">category</td><td class="val">Arts &amp; Culture</td></tr>
+        <tr class="on"><td class="col">X</td><td class="fld">dcf_grantee</td><td class="val">FALSE</td></tr>
+        <tr class="off"><td class="col">Y</td><td class="fld">image_url</td><td class="val"><span class="blank">empty</span></td></tr>
+        <tr class="on"><td class="col">Z</td><td class="fld">image_rights_ok</td><td class="val">FALSE</td></tr>
+        <tr class="off"><td class="col">AA</td><td class="fld">accessibility_notes</td><td class="val"><span class="blank">empty</span></td></tr>
+        <tr class="on"><td class="col">AB</td><td class="fld">submitter_name</td><td class="val">Added by gm@wpfw.org</td></tr>
+        <tr class="off"><td class="col">AC</td><td class="fld">submitter_email</td><td class="val"><span class="blank">empty</span></td></tr>
+        <tr class="off"><td class="col">AD</td><td class="fld">submitter_phone</td><td class="val"><span class="blank">empty</span></td></tr>
+        <tr class="on"><td class="col">AE</td><td class="fld">consent</td><td class="val">TRUE</td></tr>
+        <tr class="off"><td class="col">AF</td><td class="fld">client_token</td><td class="val"><span class="blank">empty</span></td></tr>
+        <tr class="on"><td class="col">AG</td><td class="fld">publish_at</td><td class="val">2026-09-26T15:00:00-04:00</td></tr>
+        <tr class="on"><td class="col">AH</td><td class="fld">published_at</td><td class="val">2026-09-26T15:00:00-04:00</td></tr>
+        <tr class="off"><td class="col">AI</td><td class="fld">decline_reason</td><td class="val"><span class="blank">empty</span></td></tr>
+        <tr class="on"><td class="col">AJ</td><td class="fld">internal_notes</td><td class="val">Date confirmed, start time not yet announced. all_day TRUE until it is, so the event sorts on its real date instead of falling to the bottom as undate&hellip;</td></tr>
+        <tr class="on"><td class="col">AK</td><td class="fld">last_action_by</td><td class="val">gm@wpfw.org</td></tr>
+        <tr class="on"><td class="col">AL</td><td class="fld">last_action_at</td><td class="val">2026-09-26T15:00:00-04:00</td></tr>
+        <tr class="off"><td class="col">AM</td><td class="fld">edited</td><td class="val"><span class="blank">empty</span></td></tr>
+        <tr class="off"><td class="col">AN</td><td class="fld">dup_of</td><td class="val"><span class="blank">empty</span></td></tr>
+        <tr class="off"><td class="col">AO</td><td class="fld">pii_purged_at</td><td class="val"><span class="blank">empty</span></td></tr>
+        <tr class="on"><td class="col">AP</td><td class="fld">tags</td><td class="val">Arts &amp; Culture,Racial Justice</td></tr>
+        <tr class="off"><td class="col">AQ</td><td class="fld">funders</td><td class="val"><span class="blank">empty</span></td></tr>
+        <tr class="on"><td class="col">AR</td><td class="fld">source</td><td class="val">staff</td></tr>
+        <tr class="on"><td class="col">AS</td><td class="fld">station_event</td><td class="val">TRUE</td></tr>
+        <tr class="off"><td class="col">AT</td><td class="fld">access_features</td><td class="val"><span class="blank">empty</span></td></tr>
+        <tr class="on"><td class="col">AU</td><td class="fld">attendance_mode</td><td class="val">in_person</td></tr>
+        <tr class="off"><td class="col">AV</td><td class="fld">public_contact</td><td class="val"><span class="blank">empty</span></td></tr>
+        <tr class="off"><td class="col">AW</td><td class="fld">on_air_at</td><td class="val"><span class="blank">empty</span></td></tr>
+        <tr class="off"><td class="col">AX</td><td class="fld">cosponsors</td><td class="val"><span class="blank">empty</span></td></tr></tbody>
+    </table>
+  </div>
+
+  <p class="note">STREET ADDRESS, TICKET URL AND IMAGE ARE EMPTY ON PURPOSE. Martin&rsquo;s Crosswinds is in Greenbelt, but guessing a street number for a ticketed event is not something to publish. Tickets go on sale in November. No photo means the card falls back to the station mark, which is the designed behaviour, not a gap.</p>
+</div>
+
+<script>
+var ROW = "wpfw-20260926-50TH\t2026-09-26T15:00:00-04:00\tPublished\t\tWPFW 50th Anniversary Gala\tWPFW\tAn evening honoring five decades of community-powered radio: music, guest speakers, special tributes, and the people who have kept 89.3 on the air since 1977. Tickets on sale in November.\tWPFW turns fifty on February 28, 2027, and this is the night the station marks it. An evening of music, guest speakers and special tributes at Martin's Crosswinds in Greenbelt, Maryland.\\n\\nSome of the people in that room signed the station on in 1977. Some found 89.3 last week on a car radio. It is the first real chance in a long time to get listeners, volunteers, programmers and staff under one roof.\\n\\nTickets go on sale in November. The start time will be announced here and on the air.\t2027-05-02T00:00:00-04:00\t\tTRUE\tnone\t\tMartin's Crosswinds\t\tGreenbelt\tMD\t\thttps://www.wpfwdc.org/50th-anniversary\tpaid\t\t\tArts & Culture\tFALSE\t\tFALSE\t\tAdded by gm@wpfw.org\t\t\tTRUE\t\t2026-09-26T15:00:00-04:00\t2026-09-26T15:00:00-04:00\t\tDate confirmed, start time not yet announced. all_day TRUE until it is, so the event sorts on its real date instead of falling to the bottom as undated.\tgm@wpfw.org\t2026-09-26T15:00:00-04:00\t\t\t\tArts & Culture,Racial Justice\t\tstaff\tTRUE\t\tin_person\t\t\t";
+var ta = document.getElementById('row');
+var said = document.getElementById('said');
+ta.value = ROW;
+
+function tell(msg){ said.textContent = msg; setTimeout(function(){ said.textContent = ''; }, 3200); }
+
+document.getElementById('sel').addEventListener('click', function(){
+  ta.focus(); ta.select(); ta.setSelectionRange(0, ROW.length);
+  tell('Selected \u2014 press Cmd-C');
+});
+
+document.getElementById('copy').addEventListener('click', function(){
+  /* The clipboard API is blocked in some embedded frames, so there is a
+     fallback that selects the field and lets the keyboard do it. */
+  function fallback(){
+    ta.focus(); ta.select(); ta.setSelectionRange(0, ROW.length);
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    tell(ok ? 'Copied \u2014 50 columns' : 'Selected \u2014 press Cmd-C');
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(ROW).then(function(){
+      tell('Copied \u2014 50 columns');
+    }).catch(fallback);
+  } else {
+    fallback();
+  }
+});
+</script>

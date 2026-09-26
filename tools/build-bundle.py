@@ -58,6 +58,16 @@ BANDS = [
     dict(key="people", file="people.html",         ground="night",
          stamp=("Any hour", "Programmers"),
          title="Neighbors who know their music and movements."),
+
+    dict(key="app",    file="app.html",             ground="paper",
+         stamp=("Anywhere", "Mobile"),
+         title="Take 89.3 with you."),
+
+    # No title: the ask has its own heading inside the panel, and two
+    # display-face headings stacked would fight each other.
+    dict(key="sustain", file="sustain.html",        ground="night",
+         stamp=("What happens next", "Sustain"),
+         title=None),
 ]
 
 

@@ -10,7 +10,7 @@
  *   <script src="https://wpfwgm.github.io/wpfw-home/home.js" async></script>
  *
  * data-wpfw-home takes page, or any single band: hero, missed, signup,
- * events, news, people. More than one may sit on the same page; the script
+ * events, news, people, app, sustain. More than one may sit on the same page; the script
  * is only ever loaded once.
  *
  * The attribute is data-wpfw-HOME, not data-wpfw, on purpose. The calendar
@@ -176,7 +176,9 @@
     signup: boot_signup,
     events: boot_events,
     news:   boot_news,
-    people: boot_people
+    people: boot_people,
+    app:    boot_app,
+    sustain: boot_sustain
   };
 
   /* Each block removes its own root when its feed cannot be read. The
@@ -189,7 +191,9 @@
     signup: 'wpfw-signup',
     events: 'wpfw-se',
     news:   'wpfw-news',
-    people: 'wpfw-people'
+    people: 'wpfw-people',
+    app:    'wpfw-app',
+    sustain:'wpfw-sustain'
   };
 
   function mountBand(host, key) {
@@ -249,7 +253,7 @@
        silently on a page nobody is watching. */
     host.innerHTML = '<p style="font:14px/1.5 Georgia,serif;color:#9C0D0C">' +
       'This block says data-wpfw-home="' + esc(want) + '". It should be page, ' +
-      'or one of: hero, missed, signup, events, news, people.</p>';
+      'or one of: hero, missed, signup, events, news, people, app, sustain.</p>';
   }
 
   function bleed(host) {

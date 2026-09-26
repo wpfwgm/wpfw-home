@@ -1,0 +1,140 @@
+<!-- =====================================================================
+     WPFW HOMEPAGE  ·  BAND 8  ·  GIVE MONTHLY. SHORTEN THE DRIVES.
+     =====================================================================
+     No feed. The amounts and the copy are set here.
+
+     ABOUT THE AMOUNT BUTTONS -- read this before changing them.
+
+     The pledge form at pledge.wpfwfm.org/index.php does NOT accept the
+     amount in the URL. Tested: index.php?pledge_amt=5000 and
+     ?pledge_amt=1000 both land on the form with $25 still selected. So
+     these buttons cannot carry a choice across, and the link deliberately
+     does not pretend to -- it goes to the plain form.
+
+     $25 is the default here because $25 is also the form's own default,
+     so the one button most people press is the one that matches. Anyone
+     who picks $10 or $50 has to pick it again on the form. That is a real
+     if small broken promise, and the fix is on the pledge side, not here:
+     the form's radios are named pledge_amt with values in CENTS
+     (1000, 1500, 2000, 2500, 3000, 5000) and payhow is 2 for monthly,
+     0 for one time. If index.php is ever taught to read those two off
+     the query string, set PREFILL to true below and the buttons start
+     carrying through.
+     ===================================================================== -->
+
+<div id="wpfw-sustain">
+  <div class="ws-panel">
+
+    <div class="ws-say">
+      <h2>Give monthly. Shorten the drives.</h2>
+      <p>Listener gifts are what keep this station on the air. The more of them that arrive every month, the less often we have to stop the music and ask.</p>
+      <p class="ws-fine">$25 a month is $300 a year &mdash; and it arrives whether or not there is a drive on the air. Cancel or change any time. Call 202&#8209;588&#8209;0999.</p>
+    </div>
+
+    <div class="ws-do">
+      <div class="ws-amounts" role="group" aria-label="Monthly amount">
+        <button class="ws-amt" type="button" data-cents="1000" aria-pressed="false">$10<small>a month</small></button>
+        <button class="ws-amt" type="button" data-cents="2500" aria-pressed="true">$25<small>a month</small></button>
+        <button class="ws-amt" type="button" data-cents="5000" aria-pressed="false">$50<small>a month</small></button>
+        <button class="ws-amt" type="button" data-cents="other" aria-pressed="false">Other<small>you pick</small></button>
+      </div>
+
+      <a class="ws-give" id="ws-give" href="https://pledge.wpfwfm.org/index.php">Give $25 a month</a>
+
+      <p class="ws-alt">
+        <a href="https://pledge.wpfwfm.org/index.php">One-time gift</a> &nbsp;&middot;&nbsp;
+        <a href="/ways-to-give">Wills, IRA &amp; donor advised funds</a>
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<style>
+#wpfw-sustain{ font-family:var(--body); color:var(--fg) }
+#wpfw-sustain *,#wpfw-sustain *::before,#wpfw-sustain *::after{ box-sizing:border-box }
+
+.ws-panel{
+  background:var(--surface-2); border:1px solid var(--rule);
+  border-left:3px solid var(--red);
+  padding:38px;
+  display:grid; grid-template-columns:1.1fr .9fr; gap:44px;
+  align-items:center;
+}
+.ws-say h2{
+  font-family:var(--display); font-weight:400;
+  font-size:clamp(26px,3.6vw,36px); line-height:1.12;
+  margin:0 0 16px; text-wrap:balance; color:var(--fg);
+}
+.ws-say p{ color:var(--fg-dim); margin:0 0 8px; max-width:48ch }
+.ws-fine{ font-size:13px; color:var(--fg-mute) !important; margin-top:16px !important }
+
+.ws-amounts{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px }
+.ws-amt{
+  flex:1 1 84px; background:transparent; color:var(--fg);
+  border:1px solid var(--rule); padding:14px 10px; cursor:pointer;
+  font-family:var(--mono); font-size:15px; line-height:1.2;
+  transition:border-color .15s ease, background .15s ease;
+}
+.ws-amt small{
+  display:block; font-size:9.5px; letter-spacing:.12em;
+  color:var(--fg-mute); margin-top:4px;
+}
+.ws-amt:hover{ border-color:var(--fg-mute) }
+.ws-amt[aria-pressed="true"]{ border-color:var(--red); background:rgba(200,18,16,.13) }
+.ws-amt[aria-pressed="true"] small{ color:var(--red-lift) }
+
+.ws-give{
+  display:block; text-align:center; text-decoration:none;
+  background:var(--red); color:#fff;
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.12em;
+  text-transform:uppercase; padding:15px 22px;
+  transition:background .15s ease;
+}
+.ws-give:hover{ background:var(--red-lift); color:#fff }
+
+.ws-alt{ font-size:12.5px; color:var(--fg-mute); margin:14px 0 0; text-align:center }
+.ws-alt a{ color:var(--fg-dim) }
+
+@media (max-width:900px){ .ws-panel{ grid-template-columns:1fr; gap:32px } }
+@media (max-width:560px){ .ws-panel{ padding:26px 22px } }
+</style>
+
+<script>
+(function () {
+  'use strict';
+  if (window.__wpfwSustainInit) return;
+  window.__wpfwSustainInit = true;
+
+  /* ===================== CONFIG ===================== */
+  var PLEDGE  = 'https://pledge.wpfwfm.org/index.php';
+  /* Tested false -- index.php ignores pledge_amt and payhow in the query
+     string. Flip to true only once the form reads them. */
+  var PREFILL = false;
+  /* ================================================== */
+
+  var give = document.getElementById('ws-give');
+  var btns = document.querySelectorAll('.ws-amt');
+  if (!give || !btns.length) return;
+
+  function pick(btn) {
+    for (var i = 0; i < btns.length; i++) btns[i].setAttribute('aria-pressed', 'false');
+    btn.setAttribute('aria-pressed', 'true');
+
+    var cents = btn.getAttribute('data-cents');
+    var label = (btn.childNodes[0].nodeValue || '').trim();   /* "$25" or "Other" */
+
+    give.textContent = cents === 'other' ? 'Choose an amount' : 'Give ' + label + ' a month';
+
+    if (PREFILL && cents !== 'other') {
+      give.href = PLEDGE + '?pledge_amt=' + encodeURIComponent(cents) + '&payhow=2';
+    } else {
+      give.href = PLEDGE;
+    }
+  }
+
+  for (var i = 0; i < btns.length; i++) {
+    (function (b) { b.addEventListener('click', function () { pick(b); }); })(btns[i]);
+  }
+})();
+</script>

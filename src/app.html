@@ -1,0 +1,98 @@
+<!-- =====================================================================
+     WPFW HOMEPAGE  ·  BAND 7  ·  TAKE 89.3 WITH YOU
+     =====================================================================
+     No feed. The only band on the page that is entirely static, because
+     there is nothing here that changes: two store listings and what the
+     app does.
+
+     Store links are the real ones off the current homepage:
+       apps.apple.com/us/app/wpfw-radio/id6749693298
+       play.google.com/store/apps/details?id=app.pacifica.wpfw
+
+     The buttons are set in the page's own type rather than Apple's and
+     Google's badge images. Both companies publish rules about how their
+     badges may be sized, spaced and recoloured, and a badge dropped into
+     a band like this one usually breaks at least one of them. Type that
+     matches the rest of the page is safer and reads better.
+     ===================================================================== -->
+
+<div id="wpfw-app">
+  <div class="wa-grid">
+
+    <div class="wa-say">
+      <p class="wa-lede">The free WPFW app puts the live signal in your pocket, wherever the FM dial does not reach.</p>
+      <ul class="wa-list">
+        <li>Live stream, always on</li>
+        <li>Shows on demand</li>
+        <li>Today&rsquo;s playlists</li>
+        <li>Give in a few taps</li>
+      </ul>
+    </div>
+
+    <div class="wa-stores">
+      <a class="wa-store" href="https://apps.apple.com/us/app/wpfw-radio/id6749693298">
+        <span class="wa-store-sm">Download on the</span>
+        <span class="wa-store-lg">App Store</span>
+      </a>
+      <a class="wa-store" href="https://play.google.com/store/apps/details?id=app.pacifica.wpfw">
+        <span class="wa-store-sm">Get it on</span>
+        <span class="wa-store-lg">Google Play</span>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<style>
+#wpfw-app{ font-family:var(--body); color:var(--fg) }
+#wpfw-app *,#wpfw-app *::before,#wpfw-app *::after{ box-sizing:border-box }
+
+.wa-grid{
+  display:grid; grid-template-columns:1.25fr .75fr; gap:44px;
+  align-items:center;
+}
+.wa-lede{ margin:0 0 22px; font-size:16.5px; color:var(--fg-dim); max-width:46ch }
+
+/* Four plain facts. A bulleted list would be four bullets; ruled rows
+   read as a specification, which is what they are. */
+.wa-list{
+  list-style:none; margin:0; padding:0;
+  display:grid; grid-template-columns:repeat(2,1fr); gap:0;
+  border-top:1px solid var(--rule);
+}
+.wa-list li{
+  padding:13px 0; border-bottom:1px solid var(--rule);
+  font-family:var(--mono); font-size:12.5px; letter-spacing:.04em;
+  color:var(--fg-dim);
+}
+.wa-list li:nth-child(odd){ padding-right:18px }
+
+.wa-stores{ display:flex; flex-direction:column; gap:12px }
+.wa-store{
+  display:block; text-decoration:none;
+  border:1px solid var(--rule); background:var(--surface-2);
+  padding:14px 20px; color:var(--fg);
+  transition:border-color .15s ease, background .15s ease;
+}
+.wa-store:hover{ border-color:var(--red); background:var(--surface-3) }
+.wa-store-sm{
+  display:block; font-family:var(--mono); font-size:10px;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--fg-mute);
+  margin-bottom:3px;
+}
+.wa-store-lg{
+  display:block; font-family:var(--display); font-weight:400;
+  font-size:20px; line-height:1.1;
+}
+
+@media (max-width:900px){ .wa-grid{ grid-template-columns:1fr; gap:30px } }
+@media (max-width:560px){ .wa-list{ grid-template-columns:1fr } .wa-list li:nth-child(odd){ padding-right:0 } }
+</style>
+
+<script>
+(function () {
+  'use strict';
+  /* Nothing to boot. The band is static; this exists so the bundle has a
+     boot function for every view and does not need a special case. */
+})();
+</script>
