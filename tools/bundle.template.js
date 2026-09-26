@@ -89,6 +89,14 @@
     ".wh-band a{ color:inherit }",
     ".wh-band img{ max-width:100% }",
     ".wh-band :focus-visible{ outline:2px solid var(--red-lift); outline-offset:3px }",
+    /* Squarespace sets no rule on these headings -- checked, nothing
+       matches -- so they INHERIT #F5F5F5 from an ancestor of the code
+       block, and near-white on parchment is unreadable. Inheritance
+       loses to any matching rule, so one floor rule fixes the lot. Kept
+       at low specificity on purpose: each block's own heading rules and
+       its :hover states are more specific and still win. */
+    ".wh-band h1,.wh-band h2,.wh-band h3,",
+    ".wh-band h4,.wh-band h5,.wh-band h6{ color:var(--fg) }",
     "",
     ".wh-wrap{ width:100%; max-width:1180px; margin-inline:auto; padding-inline:20px }",
     ".wh-inner{ padding-block:64px }",

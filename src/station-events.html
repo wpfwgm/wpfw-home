@@ -113,6 +113,7 @@
   text-transform:uppercase; color:var(--se-red); margin-bottom:12px;
 }
 .wpfw-se-feature h3{
+  color:var(--se-ink);
   font-family:var(--se-head); font-weight:400;
   font-size:clamp(24px,3.2vw,34px); line-height:1.1;
   margin:0 0 14px; text-wrap:balance;
@@ -160,6 +161,7 @@
   font-size:21px; line-height:1.1; color:var(--se-ink); letter-spacing:0;
 }
 .wpfw-se-row h4{
+  color:var(--se-ink);
   font-family:var(--se-head); font-weight:400; font-size:18px;
   line-height:1.2; margin:0 0 5px; text-wrap:balance;
   transition:color .15s ease;
@@ -325,8 +327,11 @@
     if (a && b) return a + ' to ' + b;
     return a || '';
   }
+  /* The calendar reads its own deep links as #view=list&event=<slug>.
+     A bare #<slug> lands on the calendar but opens nothing. */
   function linkFor(e) {
-    return e.ticket_url || (e.slug ? CALENDAR_PATH + '#' + encodeURIComponent(e.slug) : CALENDAR_PATH);
+    if (e.slug) return CALENDAR_PATH + '#view=list&event=' + encodeURIComponent(e.slug);
+    return e.ticket_url || CALENDAR_PATH;
   }
 
   /* ---------- render ---------- */
@@ -408,10 +413,16 @@
 
     var station = all.filter(function (e) { return e.station_event === true; });
 
-    /* Soonest first. An entry with no date has been announced but not
-       scheduled, so it sorts after everything that has one rather than
-       leading the band on a blank. */
+    /* An event whose plans have changed leads, whatever its date. Somebody
+       who was coming tomorrow needs to know it is off; a gala seven months
+       out can wait a card. Sorting purely by date put the 2027 gala above a
+       festival postponed that morning, which was the wrong way round.
+
+       After that: soonest first, and an event announced but not yet
+       scheduled sorts last rather than leading the band on a blank. */
     station.sort(function (a, b) {
+      var sa = statusOf(a) ? 0 : 1, sb = statusOf(b) ? 0 : 1;
+      if (sa !== sb) return sa - sb;
       var x = toDate(a.start_datetime), y = toDate(b.start_datetime);
       if (x && y) return x - y;
       if (x) return -1;
