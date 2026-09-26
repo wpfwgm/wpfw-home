@@ -1,0 +1,343 @@
+<!-- =====================================================================
+     WPFW HOMEPAGE  ·  MISSED IT? IT'S STILL UP.  ·  the archive rail
+     =====================================================================
+     One Squarespace code block. Paste whole, nothing else needed.
+
+     WHERE THE SHOWS COME FROM
+     The snapshot the archive embed already reads, built by
+     tools/build-embed.js in the WPFW Archive project:
+
+         https://wpfwgm.github.io/wpfw-archive-data/archive.json
+
+     GitHub Pages sends CORS headers; archive.wpfwfm.org does not, which is
+     the whole reason that snapshot exists. Nothing new is stood up here and
+     no proxy is needed -- this block is a second reader of a file that is
+     already published and already current.
+
+     Audio is NOT proxied. An <audio> src is not a CORS read, so the MP3s
+     stream straight off archive.wpfwfm.org.
+
+     WHAT IT SHOWS
+     The six most recent episodes that have an approved write-up. A show
+     that has aired but not yet been transcribed simply is not here yet --
+     no placeholder card, no empty state. That was the rule we settled on:
+     the rail only carries what is ready.
+     ===================================================================== -->
+
+<div id="wpfw-missed" hidden>
+  <div class="wm-rail" id="wm-rail"></div>
+  <div class="wm-foot">
+    <a class="wm-link" id="wm-more" href="/archive">Browse the full on-demand archive &rarr;</a>
+  </div>
+  <audio id="wm-audio" preload="none"></audio>
+</div>
+
+<style>
+/* Scoped under #wpfw-missed and prefixed .wm-, so it cannot inherit from
+   or leak into Squarespace's own styles. Paper band: this rail sits on
+   the light ground between the hero and the sign-up strip. */
+#wpfw-missed{
+  --wm-red:#C81210; --wm-red-lt:#F5463B;
+  --wm-paper:#F5F0E7; --wm-paper-2:#EBE3D6; --wm-hover:#F9E9E2;
+  --wm-ink:#16110D; --wm-dim:#4C4239; --wm-mute:#6B5D50;
+  --wm-rule:#D6CBBA; --wm-rule-soft:#E4DCCE;
+  --wm-head:"Young Serif",Georgia,serif;
+  --wm-body:"Bitter",Georgia,"Times New Roman",serif;
+  --wm-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  font-family:var(--wm-body); color:var(--wm-ink);
+}
+#wpfw-missed *,#wpfw-missed *::before,#wpfw-missed *::after{box-sizing:border-box}
+#wpfw-missed [hidden]{display:none !important}
+
+/* One-pixel gaps in a shared ground, so the six cards read as a grid
+   rather than six floating boxes. */
+.wm-rail{
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:1px; background:var(--wm-rule-soft);
+  border:1px solid var(--wm-rule-soft);
+}
+.wm-card{
+  background:var(--wm-paper); padding:24px 22px;
+  display:flex; flex-direction:column; gap:16px;
+  transition:background .16s ease;
+}
+.wm-card:hover{ background:var(--wm-hover) }
+
+.wm-top{ display:flex; gap:15px; align-items:center }
+
+.wm-play{
+  flex:none; width:48px; height:48px; border-radius:50%;
+  border:none; background:var(--wm-red); color:#fff;
+  font-size:15px; line-height:1; cursor:pointer;
+  display:grid; place-items:center;
+  transition:background .15s ease, transform .15s ease;
+}
+.wm-play:hover{ background:var(--wm-red-lt); transform:scale(1.06) }
+.wm-play.is-playing{ background:var(--wm-ink) }
+.wm-play.is-loading{ opacity:.65 }
+
+/* Optional programme artwork in place of the button. Off by default --
+   only 24 of 119 programmes have a logo, so switching it on makes six
+   cards look like two designs. SHOW_ART in the script turns it on. */
+.wm-art{
+  flex:none; width:48px; height:48px; overflow:hidden;
+  display:grid; place-items:center; border:1px solid var(--wm-rule);
+}
+.wm-art img{ width:100%; height:100%; display:block }
+
+.wm-id{ min-width:0 }
+.wm-id h3{
+  font-family:var(--wm-mono); font-weight:600;
+  font-size:11.5px; letter-spacing:.09em; text-transform:uppercase;
+  line-height:1.35; margin:0 0 3px; color:var(--wm-ink);
+}
+.wm-host{ margin:0; font-size:12.5px; color:#8A6520 }
+
+.wm-time{
+  flex:none; margin-left:auto; align-self:flex-start;
+  font-family:var(--wm-mono); font-size:10.5px; letter-spacing:.08em;
+  font-variant-numeric:tabular-nums;
+  padding:5px 9px; border:1px solid var(--wm-rule);
+  background:var(--wm-paper-2); color:var(--wm-dim);
+  transition:border-color .16s ease, color .16s ease;
+}
+.wm-card:hover .wm-time{ border-color:var(--wm-red); color:var(--wm-red) }
+
+/* The write-up is the reason anyone presses play, so it carries the card. */
+.wm-excerpt{
+  margin:0;
+  font-family:var(--wm-head); font-weight:400;
+  font-size:17px; line-height:1.34; color:var(--wm-ink);
+  display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical;
+  overflow:hidden; min-height:calc(4 * 1.34em);
+}
+
+.wm-tags{ margin-top:auto; display:flex; flex-wrap:wrap; gap:6px }
+.wm-tag{
+  font-family:var(--wm-mono); font-size:9.5px; letter-spacing:.08em;
+  text-transform:uppercase; padding:3px 7px;
+  border:1px solid var(--wm-rule); color:var(--wm-mute);
+}
+
+.wm-foot{ display:flex; justify-content:flex-end; margin-top:22px }
+.wm-link{
+  font-family:var(--wm-mono); font-size:11.5px; letter-spacing:.11em;
+  text-transform:uppercase; text-decoration:none; color:var(--wm-ink);
+  border-bottom:1px solid var(--wm-red); padding-bottom:3px; white-space:nowrap;
+}
+.wm-link:hover{ color:var(--wm-red) }
+
+@media (max-width:900px){ .wm-rail{ grid-template-columns:repeat(2,1fr) } }
+@media (max-width:560px){ .wm-rail{ grid-template-columns:1fr } }
+@media (prefers-reduced-motion:reduce){
+  #wpfw-missed *{ animation:none !important; transition:none !important }
+}
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  if (window.__wpfwMissedInit) return;   /* Squarespace re-runs blocks */
+  window.__wpfwMissedInit = true;
+
+  /* ===================== CONFIG ===================== */
+  var DATA_URL   = 'https://wpfwgm.github.io/wpfw-archive-data/archive.json';
+  var LIMIT      = 6;
+  var ARCHIVE    = '/archive';
+  var EXCERPT    = 165;      /* characters, trimmed to a sentence or word */
+  var MAX_TAGS   = 2;
+  var SHOW_ART   = false;    /* true = programme logo instead of play button */
+  var TIMEOUT_MS = 12000;
+  var TZ         = 'America/New_York';
+  /* ================================================== */
+
+  var root  = document.getElementById('wpfw-missed');
+  var rail  = document.getElementById('wm-rail');
+  var audio = document.getElementById('wm-audio');
+  if (!root || !rail || !audio) return;
+
+  var PLAY = '▶', PAUSE = '❚❚';
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  /* The write-ups carry light markdown -- *Don't Forget the Blues* -- which
+     is meant for a page that renders it. Here it would print the asterisks. */
+  function plain(s) {
+    return String(s == null ? '' : s)
+      .replace(/\*([^*]+)\*/g, '$1')
+      .replace(/_([^_]+)_/g, '$1')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  /* Cards sit in a grid, so every excerpt wants to be about the same length
+     or the play buttons stop lining up. Cut at the last sentence that fits,
+     and failing that the last whole word. */
+  function shorten(text, max) {
+    var s = plain(text);
+    if (s.length <= max) return s;
+    var head = s.slice(0, max + 1);
+    var stop = Math.max(head.lastIndexOf('. '), head.lastIndexOf('? '), head.lastIndexOf('! '));
+    if (stop > max * 0.55) return s.slice(0, stop + 1);
+    var sp = head.lastIndexOf(' ');
+    return s.slice(0, sp > 0 ? sp : max).replace(/[,;:—-]+$/, '') + '…';
+  }
+
+  /* "Jazz and Justice - Bobby Rox" beside a host line reading "Bobby Rox"
+     says his name twice. The suffix goes when it is the host. */
+  function programName(row, host) {
+    var t = String(row.t || '').trim();
+    if (!host) return t;
+    var m = /^(.*?)\s+[-–—]\s+(.+)$/.exec(t);
+    if (m && m[2].toLowerCase() === String(host).toLowerCase()) return m[1];
+    return t;
+  }
+
+  function when(row) {
+    var d = new Date(row.d * 1000);
+    if (isNaN(d.getTime())) return '';
+    var time = d.toLocaleTimeString('en-US', { timeZone: TZ, hour: 'numeric', minute: '2-digit' });
+    var day  = d.toLocaleDateString('en-US', { timeZone: TZ, weekday: 'short' });
+    var todayStr = new Date().toLocaleDateString('en-US', { timeZone: TZ });
+    var rowStr   = d.toLocaleDateString('en-US', { timeZone: TZ });
+    /* Today needs no day name. Anything older says which day, because the
+       transcription queue can run a few hours behind the air. */
+    return rowStr === todayStr ? time : day + ' ' + time;
+  }
+
+  /* ---------- one shared player ---------- */
+
+  var current = null;   /* the button that owns the audio element */
+
+  function reset(btn) {
+    if (!btn) return;
+    btn.classList.remove('is-playing', 'is-loading');
+    btn.textContent = PLAY;
+    btn.setAttribute('aria-label', btn.getAttribute('data-label-play'));
+  }
+
+  function toggle(btn, src) {
+    if (current === btn && !audio.paused) { audio.pause(); return; }
+    if (current !== btn) {
+      reset(current);
+      current = btn;
+      audio.src = src;
+    }
+    btn.classList.add('is-loading');
+    var p = audio.play();
+    if (p && typeof p.catch === 'function') {
+      /* A browser that refuses, or an MP3 that has rotated off the archive
+         since the snapshot was built: hand the visitor the file rather than
+         leave a button that does nothing. */
+      p.catch(function () { reset(btn); window.open(src, '_blank', 'noopener'); });
+    }
+  }
+
+  audio.addEventListener('playing', function () {
+    if (!current) return;
+    current.classList.remove('is-loading');
+    current.classList.add('is-playing');
+    current.textContent = PAUSE;
+    current.setAttribute('aria-label', current.getAttribute('data-label-pause'));
+  });
+  audio.addEventListener('pause', function () { reset(current); });
+  audio.addEventListener('ended', function () { reset(current); current = null; });
+  audio.addEventListener('error', function () { reset(current); });
+
+  /* ---------- render ---------- */
+
+  function card(row, info) {
+    var host = (info && info.host) || '';
+    var prog = programName(row, host);
+    var body = shorten(row.desc, EXCERPT);
+    var tags = (row.tags || []).slice(0, MAX_TAGS).map(function (t) {
+      return '<span class="wm-tag">' + esc(t) + '</span>';
+    }).join('');
+
+    var labelPlay  = 'Play ' + prog + (host ? ' with ' + host : '') + ', ' + when(row);
+    var labelPause = 'Pause ' + prog;
+
+    var lead;
+    if (SHOW_ART && info && info.img) {
+      lead = '<span class="wm-art" style="background:' + esc(info.imgBg || '#fff') + '">' +
+               '<img src="' + esc(info.img) + '" alt="" loading="lazy" ' +
+               'style="object-fit:' + (info.imgFit === 'cover' ? 'cover' : 'contain') + '">' +
+             '</span>';
+    } else {
+      lead = '<button class="wm-play" type="button" data-src="' + esc(row.mp3) + '" ' +
+             'data-label-play="' + esc(labelPlay) + '" data-label-pause="' + esc(labelPause) + '" ' +
+             'aria-label="' + esc(labelPlay) + '">' + PLAY + '</button>';
+    }
+
+    return '<article class="wm-card">' +
+      '<div class="wm-top">' +
+        lead +
+        '<div class="wm-id">' +
+          '<h3>' + esc(prog) + '</h3>' +
+          (host ? '<p class="wm-host">' + esc(host) + '</p>' : '') +
+        '</div>' +
+        '<time class="wm-time" datetime="' + new Date(row.d * 1000).toISOString() + '">' +
+          esc(when(row)) + '</time>' +
+      '</div>' +
+      '<p class="wm-excerpt">' + esc(body) + '</p>' +
+      (tags ? '<div class="wm-tags">' + tags + '</div>' : '') +
+    '</article>';
+  }
+
+  function render(feed) {
+    var rows = (feed && feed.shows) || [];
+    var info = (feed && feed.programInfo) || {};
+
+    var ready = rows.filter(function (r) {
+      /* An approved write-up, and audio that is still on the archive.
+         Twenty rows in the snapshot have days:0 -- listed, but the MP3 has
+         rotated off, so the play button would 404. */
+      return r.desc && String(r.desc).trim() && r.mp3 && Number(r.days) > 0;
+    });
+
+    ready.sort(function (a, b) { return b.d - a.d; });
+    ready = ready.slice(0, LIMIT);
+
+    if (!ready.length) { root.remove(); return; }
+
+    rail.innerHTML = ready.map(function (r) { return card(r, info[r.sho]); }).join('');
+
+    rail.addEventListener('click', function (ev) {
+      var btn = ev.target.closest ? ev.target.closest('.wm-play') : null;
+      if (btn) toggle(btn, btn.getAttribute('data-src'));
+    });
+
+    var more = document.getElementById('wm-more');
+    if (more) more.setAttribute('href', ARCHIVE);
+
+    root.hidden = false;
+  }
+
+  /* ---------- load ---------- */
+
+  if (typeof window.fetch !== 'function') { root.remove(); return; }
+
+  var ctrl  = (typeof AbortController === 'function') ? new AbortController() : null;
+  var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, TIMEOUT_MS);
+  var opts  = { credentials: 'omit', cache: 'no-cache' };
+  if (ctrl) opts.signal = ctrl.signal;
+
+  fetch(DATA_URL, opts)
+    .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+    .then(function (feed) {
+      clearTimeout(timer);
+      if (!feed || !feed.shows) throw new Error('unusable snapshot');
+      render(feed);
+    })
+    .catch(function () {
+      clearTimeout(timer);
+      /* Better an absent band than a headline over an apology. */
+      root.remove();
+    });
+})();
+</script>

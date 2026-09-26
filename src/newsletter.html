@@ -1,0 +1,239 @@
+<!-- =====================================================================
+     WPFW HOMEPAGE  ·  BAND 3  ·  THE STATION IN YOUR INBOX
+     =====================================================================
+     One Squarespace code block. Paste whole. Nothing to fill in.
+
+     THIS DOES NOT REPLACE YOUR FORM. The div below is your own Constant
+     Contact inline form, id ecfbf897-b807-4ef1-9252-967493a5e229 -- the
+     same one on the homepage today. Sign-ups keep going to the same list.
+     What this block does is re-skin what CC renders, in place.
+
+     NO SECOND LOADER. signup-form-widget.min.js is already on every page
+     of wpfwdc.org as <script id="signupScript">, injected site-wide, and
+     _ctct_m is set to 13098e84c4b7f5f46a0c44e714b54ace. Loading it twice
+     can double-render the form. The script at the bottom only injects a
+     loader if, after three seconds, the form is still empty AND no
+     signupScript exists -- i.e. if this block is ever pasted on a page
+     that does not already carry it.
+
+     THE MARKUP CC ACTUALLY PRODUCES, which is what the CSS is built to:
+
+       div.ctct-inline-form
+         div.ctct-form-container.ctct-form-embed.form_0
+           div.ctct-form-defaults
+             div#success_message_0.ctct-form-success
+             form#ctct_form_0.ctct-form-custom
+               h2.ctct-form-header            <- CC's heading
+               p.ctct-form-text               <- CC's description
+               div#email_address_field_0.ctct-form-field
+                 label#email_address_label_0
+                 div.ctct-form-errorMessage
+                 input#email_address_0.ctct-form-element
+               div#error_message_0.ctct-form-error
+               div#network_error_message_0.ctct-form-error
+               div#gdpr_text > p.ctct-gdpr-text
+               button.ctct-form-button
+               div#ctct_recaptcha_0.g-recaptcha
+             p.ctct-form-footer
+
+     Note the input and the button are NOT siblings -- the input is inside
+     .ctct-form-field and the button sits beside that whole div. So the
+     form itself becomes the grid and the two are placed into row one by
+     hand. A flex rule on .ctct-form-field could never have done it.
+
+     CC's stylesheet is loaded by its own widget and outranks a bare
+     class, hence !important throughout. Deliberate, not laziness.
+
+     THE CONSENT PARAGRAPH IS NOT HIDDEN. Constant Contact requires it and
+     it names Pacifica Foundation WPFW as the sender. It is set to 10.5px.
+     CC's heading and description are hidden, because the band says both
+     already -- the label stays in the DOM so the input keeps its
+     accessible name.
+     ===================================================================== -->
+
+<section id="wpfw-signup">
+  <div class="wn-in">
+
+    <div class="wn-say">
+      <h2>The station in your inbox.</h2>
+      <p>What&rsquo;s coming up on 89.3, who to listen for, the Music and Movement Moment, and what&rsquo;s happening around the District.</p>
+    </div>
+
+    <div id="wn-slot">
+      <div class="ctct-inline-form" data-form-id="ecfbf897-b807-4ef1-9252-967493a5e229"></div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+#wpfw-signup{
+  --wn-red:#C81210; --wn-red-lt:#F5463B;
+  --wn-paper:#EBE3D6;                 /* one step deeper than the rail above */
+  --wn-ink:#16110D; --wn-dim:#4C4239; --wn-mute:#6B5D50;
+  --wn-rule:#D6CBBA;
+  --wn-head:"Young Serif",Georgia,serif;
+  --wn-body:"Bitter",Georgia,"Times New Roman",serif;
+  --wn-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  background:var(--wn-paper); color:var(--wn-ink);
+  font-family:var(--wn-body);
+  border-top:1px solid var(--wn-rule);
+}
+#wpfw-signup *,#wpfw-signup *::before,#wpfw-signup *::after{box-sizing:border-box}
+
+.wn-in{
+  width:100%; max-width:1180px; margin-inline:auto;
+  padding-inline:20px; padding-block:30px 32px;
+  display:grid; grid-template-columns:1fr minmax(320px,440px);
+  gap:26px 48px; align-items:center;
+}
+.wn-say h2{
+  font-family:var(--wn-head); font-weight:400;
+  font-size:clamp(21px,2.6vw,27px); line-height:1.14;
+  margin:0 0 6px; text-wrap:balance; color:var(--wn-ink);
+}
+.wn-say p{ margin:0; color:var(--wn-dim); font-size:15px; max-width:46ch }
+
+/* ---- strip CC's own chrome ------------------------------------- */
+#wn-slot .ctct-form-container,
+#wn-slot .ctct-form-embed,
+#wn-slot .ctct-form-defaults{
+  background:transparent !important; border:none !important;
+  box-shadow:none !important; padding:0 !important; margin:0 !important;
+  max-width:none !important; width:100% !important;
+}
+
+/* ---- the form becomes the grid --------------------------------- */
+#wn-slot form.ctct-form-custom{
+  display:grid !important;
+  grid-template-columns:1fr auto;
+  gap:0 !important; margin:0 !important; padding:0 !important;
+  background:transparent !important; border:none !important;
+}
+
+/* CC's heading, description and label: out of sight, still in the DOM
+   so the input keeps an accessible name. */
+#wn-slot .ctct-form-header,
+#wn-slot .ctct-form-text,
+#wn-slot .ctct-form-label{
+  position:absolute !important; width:1px !important; height:1px !important;
+  padding:0 !important; margin:-1px !important; overflow:hidden !important;
+  clip:rect(0 0 0 0) !important; white-space:nowrap !important; border:0 !important;
+}
+
+#wn-slot .ctct-form-field{
+  grid-column:1; grid-row:1;
+  display:block !important; margin:0 !important; padding:0 !important;
+}
+#wn-slot input.ctct-form-element{
+  width:100% !important; min-width:0 !important;
+  background:transparent !important;
+  border:1px solid var(--wn-rule) !important; border-right:none !important;
+  border-radius:0 !important;
+  color:var(--wn-ink) !important;
+  font-family:var(--wn-body) !important; font-size:15px !important;
+  line-height:1.4 !important; padding:13px 14px !important;
+  height:auto !important; margin:0 !important; box-shadow:none !important;
+}
+#wn-slot input.ctct-form-element::placeholder{ color:var(--wn-mute) !important }
+#wn-slot input.ctct-form-element:focus{
+  outline:none !important; border-color:var(--wn-red) !important;
+}
+
+#wn-slot button.ctct-form-button{
+  grid-column:2; grid-row:1; align-self:stretch;
+  border:none !important; border-radius:0 !important;
+  background:var(--wn-red) !important; color:#fff !important;
+  font-family:var(--wn-mono) !important; font-size:11.5px !important;
+  font-weight:400 !important; letter-spacing:.12em !important;
+  text-transform:uppercase !important;
+  padding:0 24px !important; margin:0 !important;
+  width:auto !important; height:auto !important; min-height:0 !important;
+  float:none !important; cursor:pointer;
+  transition:background .15s ease;
+}
+#wn-slot button.ctct-form-button:hover{ background:var(--wn-red-lt) !important }
+
+/* Required by Constant Contact. Set small. Never hidden. */
+#wn-slot #gdpr_text{ grid-column:1 / -1; margin:0 !important }
+#wn-slot #gdpr_text .ctct-gdpr-text{
+  margin:10px 0 0 !important; padding:0 !important;
+  font-family:var(--wn-body) !important;
+  font-size:10.5px !important; line-height:1.6 !important;
+  color:var(--wn-mute) !important; text-align:left !important;
+}
+#wn-slot #gdpr_text a{ color:var(--wn-dim) !important; text-decoration:underline }
+
+/* Errors span the row, under the field. */
+#wn-slot .ctct-form-error{ grid-column:1 / -1 }
+#wn-slot .ctct-form-errorMessage{
+  font-family:var(--wn-mono) !important; font-size:11px !important;
+  letter-spacing:.04em !important; color:var(--wn-red) !important;
+  margin:6px 0 0 !important; background:transparent !important;
+}
+
+/* The invisible reCAPTCHA container stays in the DOM -- removing it
+   breaks the token. It is given no height, and its badge, which floats
+   over the whole page bottom-right, is hidden. */
+#wn-slot #ctct_recaptcha_0{ grid-column:1 / -1; height:0 !important; overflow:visible }
+.grecaptcha-badge{ visibility:hidden }
+
+/* What replaces the form after a successful sign-up. */
+#wn-slot .ctct-form-success{
+  background:transparent !important; border:none !important; padding:0 !important;
+}
+#wn-slot .ctct-form-success .ctct-form-header{
+  position:static !important; width:auto !important; height:auto !important;
+  clip:auto !important; margin:0 0 6px !important; overflow:visible !important;
+  font-family:var(--wn-head) !important; font-weight:400 !important;
+  font-size:21px !important; color:var(--wn-ink) !important;
+}
+#wn-slot .ctct-form-success .ctct-form-text{
+  position:static !important; width:auto !important; height:auto !important;
+  clip:auto !important; margin:0 !important; overflow:visible !important;
+  font-family:var(--wn-body) !important; font-size:15px !important;
+  color:var(--wn-dim) !important;
+}
+#wn-slot p.ctct-form-footer{
+  font-size:10.5px !important; color:var(--wn-mute) !important;
+  margin:8px 0 0 !important;
+}
+
+@media (max-width:900px){ .wn-in{ grid-template-columns:1fr; gap:22px } }
+@media (max-width:420px){
+  /* At phone width a 24px-padded button beside a field leaves the field
+     too narrow to read what you typed. Stack them. */
+  #wn-slot form.ctct-form-custom{ grid-template-columns:1fr }
+  #wn-slot button.ctct-form-button{ grid-column:1; grid-row:2; padding:14px !important }
+  #wn-slot input.ctct-form-element{ border-right:1px solid var(--wn-rule) !important }
+}
+</style>
+
+<script>
+(function () {
+  'use strict';
+  if (window.__wpfwSignupInit) return;
+  window.__wpfwSignupInit = true;
+
+  var slot = document.getElementById('wn-slot');
+  if (!slot) return;
+
+  /* The widget is already on wpfwdc.org site-wide and scans the document
+     once on load, which covers this block. This is only the safety net
+     for a page that does not carry it -- and it deliberately does nothing
+     if a loader is already present, because a second copy can render the
+     form twice. */
+  setTimeout(function () {
+    var host = slot.querySelector('.ctct-inline-form');
+    if (!host || host.children.length) return;          /* rendered fine */
+    if (document.getElementById('signupScript')) return; /* loader present */
+
+    window._ctct_m = window._ctct_m || '13098e84c4b7f5f46a0c44e714b54ace';
+    var sc = document.createElement('script');
+    sc.id = 'signupScript';
+    sc.async = true; sc.defer = true;
+    sc.src = 'https://static.ctctcdn.com/js/signup-form-widget/current/signup-form-widget.min.js';
+    document.body.appendChild(sc);
+  }, 3000);
+})();
+</script>

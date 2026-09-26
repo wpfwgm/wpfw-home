@@ -1,0 +1,16 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>wpfw-home harness</title>
+<style>
+  body{margin:0;background:#fff;font:14px/1.5 system-ui}
+  /* stand in for the Squarespace content column, so full-bleed is
+     actually being exercised rather than trivially satisfied */
+  .col{max-width:860px;margin:0 auto;padding:24px 0}
+  .note{font:12px/1.6 ui-monospace,Menlo,monospace;color:#666;padding:10px 16px;background:#f3f3f1}
+</style>
+<div class="note">HARNESS &mdash; the grey strip is a Squarespace-width content column. Bands should break out of it.</div>
+<div class="col">
+  <div data-wpfw-home="page"></div>
+</div>
+<script src="/home.js"></script>

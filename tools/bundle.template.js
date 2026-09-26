@@ -1,0 +1,277 @@
+/*
+ * WPFW homepage -- the whole thing, as one file.
+ *
+ * Built from the blocks in src/ by tools/build-bundle.py. Do not edit this
+ * file: edit the block it came from and build again, or the next build
+ * silently throws your change away.
+ *
+ * On a page:
+ *   <div data-wpfw-home="page"></div>
+ *   <script src="https://wpfwgm.github.io/wpfw-home/home.js" async></script>
+ *
+ * data-wpfw-home takes page, or any single band: hero, missed, signup,
+ * events, news, people. More than one may sit on the same page; the script
+ * is only ever loaded once.
+ *
+ * The attribute is data-wpfw-HOME, not data-wpfw, on purpose. The calendar
+ * bundle claims data-wpfw and prints a visible error for any value it does
+ * not recognise, so sharing the attribute would put "this should be
+ * calendar, submit, station or upcoming" on the homepage.
+ *
+ * WHERE THE DATA COMES FROM -- all CORS-open, none of it proxied:
+ *   confessor.wpfwfm.org/playlist/get_current.php   on air, up next, track
+ *   wpfwgm.github.io/wpfw-archive-data/archive.json episodes, programmers
+ *   wpfwgm.github.io/wpfw-calendar-feed/events.json station events
+ *   /news?format=json                               same origin
+ * Audio streams straight off archive.wpfwfm.org -- an <audio> src is not a
+ * CORS read, so it needs no proxy either.
+ */
+(function () {
+  'use strict';
+
+  if (window.__wpfwHomeBundle) return;   /* two copies of the tag on one page */
+  window.__wpfwHomeBundle = true;
+
+  /* ===================== CONFIG ===================== */
+
+  /* Pull the bands out to the window edges. Squarespace code blocks sit
+     inside the content column, so without this the grounds stop short.
+     Set false if you put the block in a section that is already full
+     width with its padding at zero. */
+  var FULL_BLEED = true;
+
+  /* wpfwdc.org serves Young Serif and Bitter. It does not serve IBM Plex
+     Mono, which every eyebrow, time chip, tag and button label is set in. */
+  var FONTS = 'https://fonts.googleapis.com/css2?family=Young+Serif' +
+              '&family=Bitter:ital,wght@0,400;0,500;0,700;1,400' +
+              '&family=IBM+Plex+Mono:wght@400;500;600&display=swap';
+
+  /* ================================================== */
+
+  var STYLES = /*__STYLES__*/;
+  var MARKUP = /*__MARKUP__*/;
+  var BANDS  = /*__BANDS__*/;
+
+  /* ---------- page-level chrome ---------- */
+
+  var CHROME = [
+    "@import url('" + FONTS + "');",
+    "",
+    ".wh-band{",
+    "  --red:#C81210; --red-lift:#F5463B; --red-text:#F5463B;",
+    "  --surface:#0C0A09; --surface-2:#14100E; --surface-3:#1C1613;",
+    "  --fg:#EFE7DC; --fg-dim:#C4B7A8; --fg-mute:#8E8074;",
+    "  --rule:#2E2520; --rule-soft:#211A16;",
+    "  --accent2:#C9973F; --accent2-line:#7A5E2A;",
+    "  --tile-bg:#1C1613; --hover:#1B100D;",
+    "  --display:'Young Serif',Georgia,serif;",
+    "  --body:'Bitter',Georgia,'Times New Roman',serif;",
+    "  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;",
+    "  background:var(--surface); color:var(--fg);",
+    "  font-family:var(--body); font-size:16px; line-height:1.6;",
+    "  -webkit-font-smoothing:antialiased;",
+    "  border-top:1px solid var(--rule-soft);",
+    "}",
+    /* Paper redefines the tokens AND `color`: a band inherits its computed
+       colour from whatever Squarespace section it lands in, so swapping
+       only the custom properties leaves bone text on parchment. */
+    ".wh-band.wh-paper, .wh-band.wh-paper2{",
+    "  color:var(--fg);",
+    "  --surface:#F5F0E7; --surface-2:#EBE3D6; --surface-3:#E1D7C7;",
+    "  --fg:#16110D; --fg-dim:#4C4239; --fg-mute:#6B5D50;",
+    "  --rule:#D6CBBA; --rule-soft:#E4DCCE;",
+    "  --accent2:#8A6520; --accent2-line:#BFAC88;",
+    "  --tile-bg:#E1D7C7; --hover:#F9E9E2; --red-text:#C81210;",
+    "}",
+    ".wh-band.wh-paper2{ --surface:#EBE3D6; --surface-2:#E1D7C7; }",
+    ".wh-band *, .wh-band *::before, .wh-band *::after{ box-sizing:border-box }",
+    ".wh-band [hidden]{ display:none !important }",
+    ".wh-band a{ color:inherit }",
+    ".wh-band img{ max-width:100% }",
+    ".wh-band :focus-visible{ outline:2px solid var(--red-lift); outline-offset:3px }",
+    "",
+    ".wh-wrap{ width:100%; max-width:1180px; margin-inline:auto; padding-inline:20px }",
+    ".wh-inner{ padding-block:64px }",
+    ".wh-band.wh-hero .wh-inner, .wh-band.wh-signup .wh-inner{ padding-block:0 }",
+    "",
+    ".wh-stamp{",
+    "  font-family:var(--mono); font-size:11px; letter-spacing:.16em;",
+    "  text-transform:uppercase; color:var(--fg-mute);",
+    "  display:flex; align-items:baseline; gap:14px; margin-bottom:10px;",
+    "}",
+    ".wh-stamp b{ color:var(--fg); font-weight:600 }",
+    ".wh-stamp i{ flex:1 1 auto; height:1px; background:var(--rule); transform:translateY(-3px) }",
+    ".wh-title{",
+    "  font-family:var(--display); font-weight:400;",
+    "  font-size:clamp(28px,4.4vw,44px); line-height:1.08;",
+    "  margin:0 0 34px; text-wrap:balance; letter-spacing:-.005em; color:var(--fg);",
+    "}",
+    "@media (prefers-reduced-motion:reduce){",
+    "  .wh-band *{ animation:none !important; transition:none !important }",
+    "}"
+  ].join('\n');
+
+  /* No CSS bleed rule. calc(50% - 50vw) is the usual trick and it is wrong
+     here: 100vw counts the scrollbar, so the band ends up wider than the
+     visible page and the whole document scrolls sideways. Measured in the
+     harness: hScroll true. documentElement.clientWidth excludes the
+     scrollbar, so the offset is computed from the host's real position
+     instead, and recomputed when the window changes. */
+  function fitBleed(host) {
+    var bands = host.querySelectorAll('.wh-band');
+    if (!bands.length) return;
+    for (var i = 0; i < bands.length; i++) {
+      bands[i].style.marginLeft = '0';
+      bands[i].style.width = 'auto';
+    }
+    var left = host.getBoundingClientRect().left;
+    var docW = document.documentElement.clientWidth;
+    for (var j = 0; j < bands.length; j++) {
+      bands[j].style.marginLeft = (-left) + 'px';
+      bands[j].style.width = docW + 'px';
+    }
+  }
+
+  /* ---------- plumbing ---------- */
+
+  var added = {};
+  function addStyle(name, css) {
+    if (added[name]) return;
+    added[name] = true;
+    var el = document.createElement('style');
+    el.setAttribute('data-wpfw-home', name);
+    el.textContent = css;
+    document.head.appendChild(el);
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  function bandHtml(b) {
+    var ground = b.ground === 'paper'  ? ' wh-paper'
+               : b.ground === 'paper2' ? ' wh-paper wh-paper2' : '';
+    var head = '';
+    if (b.stamp) {
+      head += '<div class="wh-stamp"><b>' + esc(b.stamp[0]) + '</b>' +
+              '<i></i><span>' + esc(b.stamp[1]) + '</span></div>';
+    }
+    /* The title is authored copy with entities in it, so it is not escaped. */
+    if (b.title) head += '<h2 class="wh-title">' + b.title + '</h2>';
+
+    return '<section class="wh-band wh-' + b.key + ground + '">' +
+             '<div class="wh-wrap"><div class="wh-inner">' +
+               head + (MARKUP[b.key] || '') +
+             '</div></div>' +
+           '</section>';
+  }
+
+/*__BOOTS__*/
+
+  var BOOT = {
+    hero:   boot_hero,
+    missed: boot_missed,
+    signup: boot_signup,
+    events: boot_events,
+    news:   boot_news,
+    people: boot_people
+  };
+
+  /* Each block removes its own root when its feed cannot be read. The
+     section around it has to go too, or the page shows an eyebrow and a
+     headline over nothing -- which is exactly what the harness did with
+     /news unreachable. */
+  var ROOT_ID = {
+    hero:   'wpfw-hero',
+    missed: 'wpfw-missed',
+    signup: 'wpfw-signup',
+    events: 'wpfw-se',
+    news:   'wpfw-news',
+    people: 'wpfw-people'
+  };
+
+  function mountBand(host, key) {
+    var band = null;
+    for (var i = 0; i < BANDS.length; i++) if (BANDS[i].key === key) band = BANDS[i];
+    if (!band) return false;
+    addStyle(key, STYLES[key] || '');
+    host.insertAdjacentHTML('beforeend', bandHtml(band));
+    var section = host.lastElementChild;
+    try { BOOT[key](); } catch (e) {
+      /* One band failing is not a reason for the other five to go with it. */
+      if (window.console && console.error) console.error('[wpfw-home] ' + key, e);
+    }
+    /* A block removes its root synchronously only on a hard failure. When a
+       fetch rejects it happens a moment later, so polling on a timer left
+       an eyebrow and a headline sitting over nothing for as long as the
+       timer ran -- the harness showed exactly that with /news unreachable.
+       Watching the section catches it the instant it happens. */
+    watchEmpty(section, key);
+    return true;
+  }
+
+  function watchEmpty(section, key) {
+    if (!section) return;
+    function gone() { return !document.getElementById(ROOT_ID[key]); }
+    if (gone()) { section.remove(); return; }
+
+    if (typeof MutationObserver !== 'function') {
+      setTimeout(function () { if (gone()) section.remove(); }, 14000);
+      return;
+    }
+    var obs = new MutationObserver(function () {
+      if (gone()) { section.remove(); obs.disconnect(); }
+    });
+    obs.observe(section, { childList: true, subtree: true });
+    /* Every block gives up inside twelve seconds; a watcher left running
+       for the life of the page costs more than it saves. */
+    setTimeout(function () { obs.disconnect(); }, 20000);
+  }
+
+  function mountOne(host) {
+    if (host.getAttribute('data-wpfw-home-ready')) return;
+    host.setAttribute('data-wpfw-home-ready', '1');
+
+    var want = String(host.getAttribute('data-wpfw-home') || '').trim().toLowerCase();
+
+    addStyle('chrome', CHROME);
+
+    if (want === 'page') {
+      for (var i = 0; i < BANDS.length; i++) mountBand(host, BANDS[i].key);
+      if (FULL_BLEED) bleed(host);
+      return;
+    }
+    if (mountBand(host, want)) { if (FULL_BLEED) bleed(host); return; }
+
+    /* A typo in the one line somebody pastes should say so, not fail
+       silently on a page nobody is watching. */
+    host.innerHTML = '<p style="font:14px/1.5 Georgia,serif;color:#9C0D0C">' +
+      'This block says data-wpfw-home="' + esc(want) + '". It should be page, ' +
+      'or one of: hero, missed, signup, events, news, people.</p>';
+  }
+
+  function bleed(host) {
+    fitBleed(host);
+    var t;
+    window.addEventListener('resize', function () {
+      clearTimeout(t);
+      t = setTimeout(function () { fitBleed(host); }, 120);
+    });
+    /* Images and fonts land after mount and can move the host sideways. */
+    window.addEventListener('load', function () { fitBleed(host); });
+  }
+
+  function mount() {
+    var hosts = document.querySelectorAll('[data-wpfw-home]');
+    for (var i = 0; i < hosts.length; i++) mountOne(hosts[i]);
+  }
+
+  /* async means this can land either side of the parser finishing. */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', mount);
+  } else {
+    mount();
+  }
+})();

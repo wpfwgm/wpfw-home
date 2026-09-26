@@ -1,0 +1,256 @@
+<!-- =====================================================================
+     WPFW HOMEPAGE  ·  BAND 6  ·  NEIGHBORS WHO KNOW THEIR MUSIC
+                                  AND MOVEMENTS
+     =====================================================================
+     One Squarespace code block. Four programmers, then the three numbers.
+
+     DATA
+         https://wpfwgm.github.io/wpfw-archive-data/archive.json
+     The same published snapshot the archive rail reads, so the page makes
+     one request for both bands and the browser serves the second from
+     cache. Its programInfo block already carries, per programme:
+         host   imgB  img   imgFit   url   desc
+     built by tools/build-embed.js from data/host-photos.json and
+     data/program-images.json.
+
+     WHY NOT /programmer?format=json
+     That collection is set to one post per page, so reading it takes
+     fourteen round trips -- which is exactly why the existing random-
+     programmer script on the live site pages through RSS with MAX_HOPS.
+     programInfo is one file, already fetched, already has the photos.
+
+     Twenty-four of a hundred and nineteen programmes have a portrait, so
+     the four are drawn from those. Reload and you meet four more.
+     ===================================================================== -->
+
+<section id="wpfw-people" hidden>
+  <div class="wp-faces" id="wp-faces"></div>
+
+  <div class="wp-facts">
+    <div class="wp-fact">
+      <div class="wp-n">120+</div>
+      <div class="wp-t"><b>Volunteer programmers</b>Building a show a week.</div>
+    </div>
+    <div class="wp-fact">
+      <div class="wp-n">49</div>
+      <div class="wp-t"><b>Years on air</b>Since February 28, 1977.</div>
+    </div>
+    <div class="wp-fact">
+      <div class="wp-n">24</div>
+      <div class="wp-t"><b>Hours a day</b>Including 3 a.m.</div>
+    </div>
+  </div>
+
+  <div class="wp-foot">
+    <button class="wp-link" id="wp-again" type="button">Tune to a few more &rarr;</button>
+    <div class="wp-right">
+      <a class="wp-link" href="/programmers">Every programmer &rarr;</a>
+      <a class="wp-link" href="/volunteer">Volunteer &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<style>
+#wpfw-people{
+  --wp-red:#C81210; --wp-red-lt:#F5463B;
+  --wp-ink:#0C0A09; --wp-fg:#EFE7DC; --wp-dim:#C4B7A8; --wp-mute:#8E8074;
+  --wp-rule:#2E2520; --wp-tile:#1C1613; --wp-brass:#C9973F;
+  --wp-head:"Young Serif",Georgia,serif;
+  --wp-body:"Bitter",Georgia,"Times New Roman",serif;
+  --wp-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  font-family:var(--wp-body); color:var(--wp-fg);
+}
+#wpfw-people *,#wpfw-people *::before,#wpfw-people *::after{box-sizing:border-box}
+#wpfw-people [hidden]{display:none !important}
+
+.wp-faces{ display:grid; grid-template-columns:repeat(4,1fr); gap:24px }
+.wp-face{ display:flex; flex-direction:column; gap:12px; text-decoration:none; color:inherit }
+.wp-face:hover h4{ color:var(--wp-red-lt) }
+.wp-shot{
+  width:100%; aspect-ratio:1; max-width:100%; overflow:hidden;
+  background:var(--wp-tile); border:1px solid var(--wp-rule);
+  display:grid; place-items:center;
+}
+.wp-shot img{ width:100%; height:100%; object-fit:cover; display:block }
+/* Monogram, for a programmer whose portrait will not load. */
+.wp-mono{ font-family:var(--wp-head); font-size:34px; color:var(--wp-dim) }
+.wp-face h4{ font-family:var(--wp-head); font-weight:400; font-size:17px; margin:0; transition:color .15s ease }
+.wp-role{ font-size:13px; color:var(--wp-mute); margin:0 }
+
+/* Full width under the portraits: three columns, so the numbers read as
+   evidence for the faces rather than as a sidebar beside them. */
+.wp-facts{
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:1px; background:var(--wp-rule);
+  border-block:1px solid var(--wp-rule);
+  margin-top:44px;
+}
+.wp-fact{ background:var(--wp-ink); padding:22px 22px 24px }
+.wp-n{
+  font-family:var(--wp-head); font-size:40px; line-height:1;
+  color:var(--wp-fg); margin-bottom:9px; font-variant-numeric:tabular-nums;
+}
+.wp-t{ font-size:14.5px; color:var(--wp-dim); line-height:1.5 }
+.wp-t b{ display:block; color:var(--wp-fg); font-weight:700; margin-bottom:2px }
+
+.wp-foot{
+  display:flex; flex-wrap:wrap; gap:10px 28px;
+  align-items:center; justify-content:space-between; margin-top:22px;
+}
+.wp-right{ display:flex; gap:26px; flex-wrap:wrap }
+.wp-link{
+  font-family:var(--wp-mono); font-size:11.5px; letter-spacing:.11em;
+  text-transform:uppercase; text-decoration:none; color:var(--wp-fg);
+  border:none; border-bottom:1px solid var(--wp-red);
+  background:transparent; padding:0 0 3px; cursor:pointer; white-space:nowrap;
+}
+.wp-link:hover{ color:var(--wp-red-lt) }
+
+@media (max-width:900px){ .wp-faces{ grid-template-columns:repeat(2,1fr) } }
+@media (max-width:560px){ .wp-facts{ grid-template-columns:1fr } .wp-n{ font-size:34px } }
+@media (prefers-reduced-motion:reduce){ #wpfw-people *{ transition:none !important } }
+</style>
+
+<script>
+(function () {
+  'use strict';
+  if (window.__wpfwPeopleInit) return;
+  window.__wpfwPeopleInit = true;
+
+  /* ===================== CONFIG ===================== */
+  var DATA_URL   = 'https://wpfwgm.github.io/wpfw-archive-data/archive.json';
+  var COUNT      = 4;
+  var TIMEOUT_MS = 12000;
+  /* ================================================== */
+
+  var root  = document.getElementById('wpfw-people');
+  var faces = document.getElementById('wp-faces');
+  var again = document.getElementById('wp-again');
+  if (!root || !faces) return;
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function initials(name) {
+    var parts = String(name || '').replace(/["'“”]/g, '').trim().split(/\s+/);
+    var a = parts[0] ? parts[0][0] : '';
+    var b = parts.length > 1 ? parts[parts.length - 1][0] : '';
+    return (a + b).toUpperCase() || 'W';
+  }
+  /* "Jazz and Justice - Bobby Rox" beside a name reading "Bobby Rox"
+     says it twice. Same trim as the archive rail. */
+  function programName(title, host) {
+    var t = String(title || '').trim();
+    if (!host) return t;
+    var m = /^(.*?)\s*(?:[-–—]|\s+with\s+)\s*(.+)$/i.exec(t);
+    return (m && m[2].toLowerCase() === String(host).toLowerCase()) ? m[1].trim() : t;
+  }
+
+  var pool = [];
+
+  /* Fisher-Yates on a copy. Math.random()-0.5 in a sort comparator is not
+     a shuffle -- it biases toward the original order, which on a strip
+     that advertises randomness would show the same four people most
+     times somebody looked. */
+  function pick(list, n) {
+    var a = list.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a.slice(0, n);
+  }
+
+  function draw() {
+    var four = pick(pool, COUNT);
+    faces.innerHTML = four.map(function (p) {
+      var tag = p.url ? 'a' : 'div';
+      var href = p.url ? ' href="' + esc(p.url) + '"' : '';
+      return '<' + tag + ' class="wp-face"' + href + '>' +
+        '<div class="wp-shot">' +
+          (p.img
+            ? '<img src="' + esc(p.img) + '" alt="" loading="lazy" ' +
+              'style="object-fit:' + (p.imgFit === 'contain' ? 'contain' : 'cover') + '">'
+            : '<span class="wp-mono">' + esc(initials(p.host)) + '</span>') +
+        '</div>' +
+        '<h4>' + esc(p.host) + '</h4>' +
+        '<p class="wp-role">' + esc(p.role) + '</p>' +
+      '</' + tag + '>';
+    }).join('');
+
+    /* A portrait that will not load falls back to the monogram rather
+       than leaving a hole in the row. */
+    faces.querySelectorAll('img').forEach(function (im) {
+      im.addEventListener('error', function () {
+        var shot = im.parentNode;
+        var name = shot.parentNode.querySelector('h4');
+        shot.innerHTML = '<span class="wp-mono">' +
+          esc(initials(name ? name.textContent : '')) + '</span>';
+      });
+    });
+  }
+
+  function build(feed) {
+    var info = (feed && feed.programInfo) || {};
+
+    /* feed.programs is an array of {value,label}, not a slug map -- a
+       straight lookup on it yields undefined and prints "Host, " with
+       nothing after it. Index it once. */
+    var titleOf = {};
+    (feed.programs || []).forEach(function (p) {
+      if (p && p.value) titleOf[p.value] = p.label;
+    });
+
+    Object.keys(info).forEach(function (slug) {
+      var p = info[slug];
+      if (!p || !p.host) return;
+      /* A co-hosted programme lists both names in one string. Splitting
+         them would invent two people out of one field, so the pair is
+         shown as it is written. */
+      pool.push({
+        host:   String(p.host).trim(),
+        role:   titleOf[slug] ? 'Host, ' + programName(titleOf[slug], p.host)
+                               : 'WPFW programmer',
+        img:    p.img || '',
+        imgFit: p.imgFit,
+        url:    p.url || ''
+      });
+    });
+
+    /* Prefer the ones with a portrait -- a row of four monograms is not
+       the point of a band about faces. Fall back to the whole pool only
+       if there are not enough. */
+    var withArt = pool.filter(function (p) { return p.img; });
+    if (withArt.length >= COUNT) pool = withArt;
+    if (!pool.length) { root.remove(); return; }
+
+    draw();
+    root.hidden = false;
+    if (again) again.addEventListener('click', draw);
+  }
+
+  if (typeof window.fetch !== 'function') { root.remove(); return; }
+
+  var ctrl  = (typeof AbortController === 'function') ? new AbortController() : null;
+  var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, TIMEOUT_MS);
+  var opts  = { credentials: 'omit', cache: 'default' };
+  if (ctrl) opts.signal = ctrl.signal;
+
+  fetch(DATA_URL, opts)
+    .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+    .then(function (feed) {
+      clearTimeout(timer);
+      if (!feed || !feed.programInfo) throw new Error('no programInfo');
+      build(feed);
+    })
+    .catch(function () {
+      clearTimeout(timer);
+      /* The numbers do not depend on the feed, so they stay. */
+      faces.remove();
+      if (again) again.remove();
+      root.hidden = false;
+    });
+})();
+</script>

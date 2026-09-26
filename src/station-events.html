@@ -1,0 +1,453 @@
+<!-- =====================================================================
+     WPFW HOMEPAGE  ·  COME BE IN THE ROOM  ·  station events
+     =====================================================================
+     One Squarespace code block. Paste whole, nothing else needed.
+
+     WHERE THE EVENTS COME FROM
+     The same published feed the Social Justice Calendar and the Station
+     Events page read:
+
+         https://wpfwgm.github.io/wpfw-calendar-feed/events.json
+
+     built by wpfw-calendar-feed from the Apps Script sheet. This block
+     keeps only the entries flagged  station_event: true .
+
+     Deliberately NOT using <div data-wpfw="upcoming">. That view exists
+     and works, but it shows the next six events from the whole calendar
+     and carries its own styling. This band wants station events only, in
+     the homepage's own type and color.
+
+     The web app behind the feed answers in JSONP, not JSON, so it cannot
+     be fetched directly from a page. The published file is the only
+     readable source, which is why there is no second attempt here: if
+     GitHub Pages is unreachable the band removes itself rather than sit
+     on the homepage saying it failed.
+
+     WHAT IT HANDLES, because the live feed does all of this today
+       · title prefixed POSTPONED: / CANCELED:      -> red status chip,
+         prefix stripped from title and blurb, and the postponement
+         notice from full_description shown in place of the blurb
+       · all_day TRUE                               -> date only, no
+         time row: the hour has not been announced
+       · start_datetime arrives as an empty string  -> "Date to come"
+       · image_url arrives empty                    -> station mark ground
+       · no station events at all                   -> whole band hides
+       · one station event                          -> feature only, no list
+     ===================================================================== -->
+
+<div id="wpfw-se" hidden>
+  <div class="wpfw-se-grid">
+
+    <!-- the next station event, with its picture -->
+    <article class="wpfw-se-feature" id="wpfw-se-feature"></article>
+
+    <!-- everything else the station is putting on -->
+    <div class="wpfw-se-panel" id="wpfw-se-panel"></div>
+
+  </div>
+</div>
+
+<style>
+/* Homepage tokens, not the calendar's. This band sits on the dark
+   ground with two paper panels laid on it, so the type colors are
+   fixed here rather than inherited from whatever Squarespace section
+   the block lands in. */
+#wpfw-se{
+  --se-red:#C81210; --se-red-lt:#F5463B;
+  --se-paper:#F5F0E7; --se-paper-2:#EBE3D6;
+  --se-ink:#16110D; --se-dim:#4C4239; --se-mute:#6B5D50;
+  --se-rule:#D6CBBA;
+  --se-head:"Young Serif",Georgia,serif;
+  --se-body:"Bitter",Georgia,"Times New Roman",serif;
+  --se-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  font-family:var(--se-body); color:var(--se-ink);
+}
+#wpfw-se *,#wpfw-se *::before,#wpfw-se *::after{box-sizing:border-box}
+#wpfw-se [hidden]{display:none !important}
+
+.wpfw-se-grid{
+  display:grid; grid-template-columns:1.3fr 1fr; gap:40px;
+  align-items:start;
+}
+
+/* ---------- the feature ---------- */
+.wpfw-se-feature{
+  background:var(--se-paper); border:1px solid var(--se-rule);
+  padding:0; overflow:hidden;
+}
+.wpfw-se-img{
+  position:relative; display:grid; place-items:center;
+  aspect-ratio:16/9; max-width:100%; overflow:hidden;
+  border-bottom:1px solid var(--se-rule);
+  background:
+    radial-gradient(120% 95% at 20% 16%, rgba(245,70,59,.50), transparent 60%),
+    radial-gradient(105% 85% at 84% 80%, rgba(201,151,63,.40), transparent 58%),
+    linear-gradient(158deg,#1D100C 0%,#0C0A09 56%,#27130F 100%);
+}
+.wpfw-se-img::after{
+  content:""; position:absolute; inset:0;
+  background-image:radial-gradient(rgba(239,231,220,.15) 1px, transparent 1.15px);
+  background-size:7px 7px;
+}
+.wpfw-se-img img{
+  position:absolute; inset:0; z-index:1;
+  width:100%; height:100%; object-fit:cover; display:block;
+}
+.wpfw-se-mark{
+  position:relative; z-index:1; text-align:center;
+  display:flex; flex-direction:column; align-items:center; gap:7px;
+}
+.wpfw-se-mark b{ font-family:var(--se-head); font-weight:400; font-size:26px; line-height:1; color:#EFE7DC }
+.wpfw-se-mark i{ font-family:var(--se-mono); font-style:normal; font-weight:600; font-size:12px; letter-spacing:.04em; color:var(--se-red-lt) }
+
+.wpfw-se-body{ padding:30px }
+.wpfw-se-status{
+  display:inline-block; margin-bottom:12px;
+  font-family:var(--se-mono); font-size:10px; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase;
+  color:#fff; background:var(--se-red); padding:4px 9px;
+}
+.wpfw-se-row .wpfw-se-status{ margin:0 0 6px; font-size:9px; padding:3px 7px }
+.wpfw-se-when{
+  font-family:var(--se-mono); font-size:11px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--se-red); margin-bottom:12px;
+}
+.wpfw-se-feature h3{
+  font-family:var(--se-head); font-weight:400;
+  font-size:clamp(24px,3.2vw,34px); line-height:1.1;
+  margin:0 0 14px; text-wrap:balance;
+}
+.wpfw-se-feature p.blurb{ margin:0 0 20px; color:var(--se-dim); max-width:48ch }
+.wpfw-se-facts{
+  list-style:none; margin:0 0 24px; padding:0;
+  display:flex; flex-direction:column; gap:7px;
+  font-family:var(--se-mono); font-size:12.5px; color:var(--se-mute);
+}
+.wpfw-se-facts li{ display:flex; gap:12px }
+.wpfw-se-facts b{ color:var(--se-dim); font-weight:500; min-width:78px; flex:none }
+
+.wpfw-se-btns{ display:flex; gap:12px; flex-wrap:wrap }
+.wpfw-se-btn{
+  display:inline-block; font-family:var(--se-mono); font-size:11.5px;
+  letter-spacing:.12em; text-transform:uppercase; text-decoration:none;
+  padding:13px 22px; background:var(--se-red); color:#fff;
+  transition:background .15s ease;
+}
+.wpfw-se-btn:hover{ background:var(--se-red-lt); color:#fff }
+.wpfw-se-btn.ghost{ background:transparent; border:1px solid var(--se-rule); color:var(--se-ink) }
+.wpfw-se-btn.ghost:hover{ background:var(--se-paper-2); border-color:var(--se-mute); color:var(--se-ink) }
+
+/* ---------- the list ---------- */
+.wpfw-se-panel{
+  background:var(--se-paper); border:1px solid var(--se-rule);
+  padding:26px 24px;
+}
+.wpfw-se-row{
+  display:grid; grid-template-columns:auto 1fr; gap:18px;
+  padding:18px 0; border-top:1px solid var(--se-rule);
+  text-decoration:none; color:inherit;
+}
+.wpfw-se-row:first-child{ border-top:none; padding-top:0 }
+.wpfw-se-row:hover h4{ color:var(--se-red) }
+.wpfw-se-date{
+  font-family:var(--se-mono); font-size:10px; letter-spacing:.1em;
+  text-transform:uppercase; text-align:center; line-height:1.5;
+  color:var(--se-mute); border:1px solid var(--se-rule);
+  padding:8px 10px; min-width:58px; align-self:start;
+}
+.wpfw-se-date b{
+  display:block; font-family:var(--se-head); font-weight:400;
+  font-size:21px; line-height:1.1; color:var(--se-ink); letter-spacing:0;
+}
+.wpfw-se-row h4{
+  font-family:var(--se-head); font-weight:400; font-size:18px;
+  line-height:1.2; margin:0 0 5px; text-wrap:balance;
+  transition:color .15s ease;
+}
+.wpfw-se-row .where{ margin:0 0 6px; font-family:var(--se-mono); font-size:11.5px; color:var(--se-mute) }
+.wpfw-se-row p{ margin:0; font-size:13.5px; color:var(--se-dim); line-height:1.55 }
+
+.wpfw-se-none{
+  font-size:13.5px; line-height:1.6; color:var(--se-mute);
+  border:1px dashed var(--se-rule); padding:16px 18px; margin:0;
+}
+.wpfw-se-foot{
+  margin-top:22px; padding-top:18px; border-top:1px solid var(--se-rule);
+  display:flex; gap:14px; flex-wrap:wrap; align-items:center;
+}
+.wpfw-se-link{
+  font-family:var(--se-mono); font-size:11.5px; letter-spacing:.11em;
+  text-transform:uppercase; text-decoration:none; color:var(--se-ink);
+  border-bottom:1px solid var(--se-red); padding-bottom:3px; white-space:nowrap;
+}
+.wpfw-se-link:hover{ color:var(--se-red) }
+
+@media (max-width:900px){
+  .wpfw-se-grid{ grid-template-columns:1fr; gap:32px }
+}
+@media (max-width:560px){
+  .wpfw-se-body{ padding:24px 20px }
+  .wpfw-se-panel{ padding:22px 18px }
+}
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  /* Squarespace re-runs a code block on soft navigation. */
+  if (window.__wpfwHomeEventsInit) return;
+  window.__wpfwHomeEventsInit = true;
+
+  /* ===================== CONFIG ===================== */
+  var FEED          = 'https://wpfwgm.github.io/wpfw-calendar-feed/events.json';
+  var CALENDAR_PATH = '/social-justice-calendar';
+  var SUBMIT_PATH   = '/social-justice-calendar#submit';
+  var EVENTS_PATH   = '/station-events';
+  var LIST_LIMIT    = 4;          /* rows beside the feature */
+  var TIMEOUT_MS    = 12000;
+  var TZ            = 'America/New_York';
+  /* ================================================== */
+
+  var root    = document.getElementById('wpfw-se');
+  var featEl  = document.getElementById('wpfw-se-feature');
+  var panelEl = document.getElementById('wpfw-se-panel');
+  if (!root || !featEl || !panelEl) return;
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  /* start_datetime is an empty string on at least one live entry, so every
+     date helper has to answer for "no date" rather than print Invalid Date. */
+  function toDate(iso) {
+    if (!iso) return null;
+    var x = new Date(iso);
+    return isNaN(x.getTime()) ? null : x;
+  }
+  function fmt(iso, opts) {
+    var x = toDate(iso); if (!x) return '';
+    var o = { timeZone: TZ }; for (var k in opts) o[k] = opts[k];
+    return x.toLocaleDateString('en-US', o);
+  }
+  function timeOf(iso) {
+    var x = toDate(iso); if (!x) return '';
+    return x.toLocaleTimeString('en-US', { timeZone: TZ, hour: 'numeric', minute: '2-digit' })
+            .replace(':00', '').replace(' AM', ' a.m.').replace(' PM', ' p.m.');
+  }
+  /* "Sunday, September 27 · in 2 days" — the countdown is the part that makes
+     somebody act, so it is computed rather than typed into the page. */
+  function whenLine(e) {
+    var x = toDate(e.start_datetime);
+    if (!x) return 'Date to come';
+    /* The year is noise on something happening this week and essential on
+       something eighteen months out, so it appears only when the event
+       falls outside the current year. */
+    var thisYear = fmt(new Date().toISOString(), { year: 'numeric' });
+    var evYear   = fmt(e.start_datetime, { year: 'numeric' });
+    var shape    = { weekday: 'long', month: 'long', day: 'numeric' };
+    if (evYear !== thisYear) shape.year = 'numeric';
+    var label = fmt(e.start_datetime, shape);
+    var today = new Date(new Date().toLocaleString('en-US', { timeZone: TZ }));
+    var that  = new Date(x.toLocaleString('en-US', { timeZone: TZ }));
+    today.setHours(0, 0, 0, 0); that.setHours(0, 0, 0, 0);
+    var days = Math.round((that - today) / 86400000);
+    if (days === 0) return label + ' · today';
+    if (days === 1) return label + ' · tomorrow';
+    if (days > 1 && days < 14) return label + ' · in ' + days + ' days';
+    return label;
+  }
+  /* The sheet signals a change of plan by prefixing the title and the short
+     description -- "POSTPONED: Jazz and Justice Festival". Printed raw that
+     shouts the word twice and buries it inside an <h3>, so it is lifted out
+     into a chip and stripped from the text it was stuck to. */
+  var STATUSES = 'POSTPONED|CANCELLED|CANCELED|RESCHEDULED|SOLD OUT';
+
+  /* Detecting and removing are not the same pattern, and conflating them
+     ate a word: full_description opens "POSTPONED FOR RAIN." with no colon,
+     so a blind strip left the notice reading "FOR RAIN. The festival...".
+     Only the labelled "PREFIX:" form is a label; anything else is a
+     sentence the station wrote and gets left alone. */
+  var STATUS_RE = new RegExp('^\\s*(' + STATUSES + ')\\b', 'i');
+  var STRIP_RE  = new RegExp('^\\s*(?:' + STATUSES + ')\\s*:\\s*', 'i');
+
+  function statusOf(e) {
+    var m = STATUS_RE.exec(String(e.title || ''));
+    return m ? m[1].toUpperCase() : '';
+  }
+  function strip(text) {
+    return String(text == null ? '' : text).replace(STRIP_RE, '');
+  }
+
+  /* A postponed event's first paragraph is the notice -- why, and what
+     happens next. That is the only thing a reader wants, so it replaces the
+     standing blurb until the event is scheduled again. */
+  function blurbOf(e) {
+    if (statusOf(e)) {
+      var first = String(e.full_description || '').split(/\n\s*\n/)[0];
+      if (first && first.trim()) return strip(first).trim();
+    }
+    return strip(e.short_description);
+  }
+
+  function place(e) {
+    var bits = [];
+    if (e.venue_name) bits.push(e.venue_name);
+    var town = [e.city, e.state].filter(Boolean).join(', ');
+    if (town) bits.push(town);
+    if (!bits.length && e.online_url) return 'Online';
+    return bits.join(' · ');
+  }
+  function costOf(e) {
+    if (e.cost_type === 'free') return 'Free';
+    var amt = String(e.cost_amount == null ? '' : e.cost_amount).trim();
+    var money = /^\d+(\.\d{1,2})?$/.test(amt) ? '$' + amt : amt;
+    if (e.cost_type === 'donation') return money ? 'Suggested donation ' + money : 'Suggested donation';
+    /* A paid event with no amount yet -- the Gala, whose tickets go on sale
+       in November -- would otherwise drop the Cost row entirely and leave
+       the card with a single line of detail. "Ticketed" says the true thing
+       without inventing a price. */
+    if (e.cost_type === 'paid') return money || 'Ticketed';
+    return money;
+  }
+  /* all_day on this calendar means "the date is set, the hour is not
+     announced yet" -- that is how the 50th Anniversary Gala is entered,
+     and nothing else on the calendar uses the flag. So an all_day event
+     gets no When row at all: the date line above already carries the
+     day, and printing "All day" against a ticketed evening would be
+     wrong. A genuinely all-day event still reads correctly; it just
+     leans on its date rather than repeating itself. */
+  function hoursOf(e) {
+    if (e.all_day) return '';
+    var a = timeOf(e.start_datetime), b = timeOf(e.end_datetime);
+    if (a && b) return a + ' to ' + b;
+    return a || '';
+  }
+  function linkFor(e) {
+    return e.ticket_url || (e.slug ? CALENDAR_PATH + '#' + encodeURIComponent(e.slug) : CALENDAR_PATH);
+  }
+
+  /* ---------- render ---------- */
+
+  function renderFeature(e) {
+    var img = String(e.image_url || '').trim();
+    var pic = img
+      ? '<img src="' + esc(img) + '" alt="" loading="lazy">'
+      : '';
+
+    var facts = '';
+    var where = place(e), hours = hoursOf(e), cost = costOf(e);
+    if (where) facts += '<li><b>Where</b><span>' + esc(where) + '</span></li>';
+    if (hours) facts += '<li><b>When</b><span>' + esc(hours) + '</span></li>';
+    if (cost)  facts += '<li><b>Cost</b><span>' + esc(cost) + '</span></li>';
+
+    var status = statusOf(e);
+    var blurb  = blurbOf(e);
+
+    featEl.innerHTML =
+      '<figure style="margin:0">' +
+        '<div class="wpfw-se-img">' +
+          '<div class="wpfw-se-mark"><b>WPFW</b><i>89.3</i></div>' + pic +
+        '</div>' +
+      '</figure>' +
+      '<div class="wpfw-se-body">' +
+        (status ? '<div class="wpfw-se-status">' + esc(status) + '</div>' : '') +
+        '<div class="wpfw-se-when">' + esc(whenLine(e)) + '</div>' +
+        '<h3>' + esc(strip(e.title)) + '</h3>' +
+        (blurb ? '<p class="blurb">' + esc(blurb) + '</p>' : '') +
+        (facts ? '<ul class="wpfw-se-facts">' + facts + '</ul>' : '') +
+        '<div class="wpfw-se-btns">' +
+          '<a class="wpfw-se-btn" href="' + esc(linkFor(e)) + '">Details</a>' +
+          '<a class="wpfw-se-btn ghost" href="' + EVENTS_PATH + '">All events</a>' +
+        '</div>' +
+      '</div>';
+
+    /* A picture that will not load should leave the ground showing, not a
+       broken frame in the middle of the homepage. */
+    var el = featEl.querySelector('img');
+    if (el) el.addEventListener('error', function () { el.remove(); });
+  }
+
+  function renderList(rest) {
+    var html = '';
+
+    if (rest.length) {
+      html += rest.slice(0, LIST_LIMIT).map(function (e) {
+        var x = toDate(e.start_datetime);
+        var day = x ? fmt(e.start_datetime, { day: 'numeric' }) : '—';
+        var mon = x ? fmt(e.start_datetime, { month: 'short', year: 'numeric' }) : 'Date to come';
+        var where = place(e);
+        var st = statusOf(e);
+        return '<a class="wpfw-se-row" href="' + esc(linkFor(e)) + '">' +
+          '<div class="wpfw-se-date"><b>' + esc(day) + '</b>' + esc(mon) + '</div>' +
+          '<div>' +
+            (st ? '<div class="wpfw-se-status">' + esc(st) + '</div>' : '') +
+            '<h4>' + esc(strip(e.title)) + '</h4>' +
+            (where ? '<p class="where">' + esc(where) + '</p>' : '') +
+            (e.short_description ? '<p>' + esc(strip(e.short_description)) + '</p>' : '') +
+          '</div>' +
+        '</a>';
+      }).join('');
+    } else {
+      html += '<p class="wpfw-se-none">Nothing else on the books just yet. ' +
+              'Anything the station puts on appears here the moment it is listed on the calendar.</p>';
+    }
+
+    html += '<div class="wpfw-se-foot">' +
+              '<a class="wpfw-se-btn" href="' + CALENDAR_PATH + '">Social Justice Calendar</a>' +
+              '<a class="wpfw-se-link" href="' + SUBMIT_PATH + '">Submit an event &rarr;</a>' +
+            '</div>';
+
+    panelEl.innerHTML = html;
+  }
+
+  function render(feed) {
+    var all = (feed && feed.events) || [];
+
+    var station = all.filter(function (e) { return e.station_event === true; });
+
+    /* Soonest first. An entry with no date has been announced but not
+       scheduled, so it sorts after everything that has one rather than
+       leading the band on a blank. */
+    station.sort(function (a, b) {
+      var x = toDate(a.start_datetime), y = toDate(b.start_datetime);
+      if (x && y) return x - y;
+      if (x) return -1;
+      if (y) return 1;
+      return 0;
+    });
+
+    /* No station events means no band. Better an absent section than a
+       headline over an apology. */
+    if (!station.length) { root.remove(); return; }
+
+    renderFeature(station[0]);
+    renderList(station.slice(1));
+    root.hidden = false;
+  }
+
+  /* ---------- load ---------- */
+
+  if (typeof window.fetch !== 'function') { root.remove(); return; }
+
+  var url  = FEED + (FEED.indexOf('?') < 0 ? '?' : '&') + 'v=' + Math.floor(Date.now() / 60000);
+  var ctrl = (typeof AbortController === 'function') ? new AbortController() : null;
+  var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, TIMEOUT_MS);
+  var opts = { credentials: 'omit', cache: 'default' };
+  if (ctrl) opts.signal = ctrl.signal;
+
+  fetch(url, opts)
+    .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+    .then(function (feed) {
+      clearTimeout(timer);
+      if (!feed || !feed.ok || !feed.events) throw new Error('unusable feed');
+      render(feed);
+    })
+    .catch(function () {
+      clearTimeout(timer);
+      root.remove();
+    });
+})();
+</script>

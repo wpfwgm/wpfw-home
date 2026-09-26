@@ -1,0 +1,392 @@
+<!-- =====================================================================
+     WPFW HOMEPAGE  ·  BAND 1  ·  HERO + LIVE CARD
+     =====================================================================
+     One Squarespace code block. Replaces the existing hero section.
+
+     LIVE DATA
+         https://confessor.wpfwfm.org/playlist/get_current.php
+     Already CORS-open -- the sticky bar on every other page reads it.
+     Refreshed every 20s, same interval as that bar.
+
+     WHAT THE FEED GIVES US
+       current.sh_name / sh_djname / sh_desc / sh_photo
+       current.pl_song / pl_artist   the record on air this minute
+       current.sh_shour              show start, seconds into the day
+       current.sh_len                show length in seconds
+       current.cur_start / cur_end   "2:00 PM" / "4:00 PM"
+       next.sh_name / sh_djname / nxt_start
+
+     The progress bar is computed from sh_shour + sh_len rather than the
+     printed times, because it has to survive a show that runs past
+     midnight -- Into The Dawn starts at 79200 and runs 10800.
+
+     THE STICKY BAR STAYS OFF THIS PAGE. Its own config already skips
+     "/" for exactly this reason: the hero is the player here. Nothing
+     to change there.
+     ===================================================================== -->
+
+<header id="wpfw-hero">
+  <canvas id="wh-wave" aria-hidden="true"></canvas>
+
+  <div class="wh-in">
+
+    <div class="wh-lockup">
+      <div class="wh-kicker">Washington, DC &middot; Since 1977</div>
+      <h1>
+        <span class="wh-l1">WPFW</span>
+        <span class="wh-l2">Jazz and Justice</span>
+        <span class="wh-l3">89.3</span>
+      </h1>
+      <p>Where music and message share a microphone. Forty-nine years of community radio, run by the people who listen to it.</p>
+    </div>
+
+    <!-- Filled from the feed. The markup below is the resting state a
+         visitor sees for the half-second before the first response, and
+         what stays on screen if the feed never answers. -->
+    <div class="wh-card" id="wh-card">
+      <div class="wh-card-head">
+        <span class="wh-dot">On air now</span>
+        <span class="wh-elapsed" id="wh-elapsed"></span>
+      </div>
+
+      <div class="wh-body">
+        <div class="wh-art" id="wh-art">
+          <span class="wh-mark"><b>WPFW</b><i>89.3</i></span>
+        </div>
+        <div class="wh-id">
+          <h2 id="wh-show">89.3 FM</h2>
+          <p class="wh-dj" id="wh-dj"></p>
+          <p class="wh-desc" id="wh-desc">Jazz and Justice radio, live from Washington, DC.</p>
+        </div>
+        <button class="wh-play" id="wh-play" type="button" aria-label="Listen live">&#9654;</button>
+      </div>
+
+      <!-- The record on air this minute, when the feed has one. -->
+      <p class="wh-track" id="wh-track" hidden></p>
+
+      <div class="wh-prog"><i id="wh-bar"></i></div>
+      <div class="wh-times"><span id="wh-start"></span><span id="wh-end"></span></div>
+
+      <div class="wh-next" id="wh-next" hidden>
+        <span class="wh-next-lbl">Up next</span>
+        <span id="wh-next-txt"></span>
+      </div>
+    </div>
+
+  </div>
+</header>
+
+<style>
+#wpfw-hero{
+  --wh-red:#C81210; --wh-red-lt:#F5463B;
+  --wh-ink:#0C0A09; --wh-fg:#EFE7DC; --wh-dim:#C4B7A8; --wh-mute:#8E8074;
+  --wh-rule:#2E2520; --wh-brass:#C9973F;
+  --wh-head:"Young Serif",Georgia,serif;
+  --wh-body:"Bitter",Georgia,"Times New Roman",serif;
+  --wh-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  position:relative; overflow:hidden;
+  background:var(--wh-ink); color:var(--wh-fg);
+  font-family:var(--wh-body);
+}
+#wpfw-hero *,#wpfw-hero *::before,#wpfw-hero *::after{box-sizing:border-box}
+#wpfw-hero [hidden]{display:none !important}
+
+#wh-wave{ position:absolute; inset:0; width:100%; height:100%; opacity:.5; pointer-events:none }
+
+.wh-in{
+  position:relative; width:100%; max-width:1180px;
+  margin-inline:auto; padding-inline:20px; padding-block:60px 66px;
+  display:grid; grid-template-columns:1.05fr .95fr; gap:52px; align-items:center;
+}
+
+.wh-lockup{ min-width:0 }
+.wh-kicker{
+  font-family:var(--wh-mono); font-size:10.5px; letter-spacing:.22em;
+  text-transform:uppercase; color:var(--wh-mute); margin-bottom:18px;
+}
+.wh-lockup h1{ margin:0; font-family:var(--wh-head); font-weight:400; line-height:.86; letter-spacing:-.02em }
+.wh-l1{ display:block; font-size:clamp(56px,10.5vw,116px) }
+.wh-l2{
+  display:block; color:var(--wh-red-lt); font-family:var(--wh-body);
+  font-style:italic; font-weight:400; font-size:clamp(28px,5.1vw,56px);
+  line-height:1; margin:6px 0 4px;
+}
+.wh-l3{ display:block; font-size:clamp(44px,8.4vw,92px) }
+.wh-lockup p{ margin:24px 0 0; max-width:34ch; color:var(--wh-dim); font-size:16.5px }
+
+/* Sits on the hero's own ground so the waveform runs through it. */
+.wh-card{ background:transparent; border:1px solid var(--wh-rule); border-top:3px solid var(--wh-red); padding:24px }
+.wh-card-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px }
+.wh-dot{
+  display:inline-flex; align-items:center; gap:7px;
+  font-family:var(--wh-mono); font-size:10.5px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--wh-red-lt);
+}
+.wh-dot::before{
+  content:""; width:7px; height:7px; border-radius:50%;
+  background:var(--wh-red-lt); animation:wh-pulse 2.4s ease-in-out infinite;
+}
+@keyframes wh-pulse{ 0%,100%{opacity:1} 50%{opacity:.25} }
+.wh-elapsed{ font-family:var(--wh-mono); font-size:11px; color:var(--wh-mute); font-variant-numeric:tabular-nums }
+
+.wh-body{ display:flex; gap:18px; align-items:flex-start }
+.wh-art{
+  flex:none; width:96px; aspect-ratio:1; max-width:100%;
+  display:grid; place-items:center; overflow:hidden;
+  background:#0C0A09; border:1px solid var(--wh-rule);
+}
+.wh-art img{ width:100%; height:100%; object-fit:cover; display:block }
+.wh-mark{ display:flex; flex-direction:column; align-items:center; gap:2px }
+.wh-mark b{ font-family:var(--wh-head); font-weight:400; font-size:23px; line-height:1; color:var(--wh-fg) }
+.wh-mark i{ font-family:var(--wh-mono); font-style:normal; font-weight:600; font-size:12px; color:var(--wh-red-lt) }
+
+.wh-id{ min-width:0 }
+.wh-id h2{ font-family:var(--wh-head); font-weight:400; font-size:26px; line-height:1.14; margin:0 0 6px; color:var(--wh-fg) }
+.wh-dj{ margin:0; color:var(--wh-brass); font-size:14.5px }
+.wh-desc{ margin:8px 0 0; color:var(--wh-mute); font-size:14px }
+
+.wh-play{
+  flex:none; margin-left:auto;
+  width:62px; height:62px; border-radius:50%; border:none;
+  background:var(--wh-red); color:#fff; font-size:20px; line-height:1;
+  display:grid; place-items:center; cursor:pointer;
+  transition:background .15s ease, transform .15s ease;
+}
+.wh-play:hover{ background:var(--wh-red-lt); transform:scale(1.06) }
+.wh-play.is-playing{ background:#EFE7DC; color:#0C0A09 }
+.wh-play.is-loading{ opacity:.7 }
+
+.wh-track{
+  margin:18px 0 0; font-size:14px; color:var(--wh-dim);
+  display:flex; gap:9px; align-items:baseline; flex-wrap:wrap;
+}
+.wh-track b{ font-weight:400; color:var(--wh-fg) }
+.wh-track span{ font-family:var(--wh-mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--wh-mute) }
+
+.wh-prog{ height:3px; background:var(--wh-rule); margin:20px 0 14px; position:relative; overflow:hidden }
+.wh-prog i{ position:absolute; inset:0 auto 0 0; display:block; width:0; background:var(--wh-red); transition:width .6s linear }
+.wh-times{ display:flex; justify-content:space-between; font-family:var(--wh-mono); font-size:11px; color:var(--wh-mute); font-variant-numeric:tabular-nums }
+
+.wh-next{ margin-top:20px; padding-top:16px; border-top:1px solid var(--wh-rule); display:flex; gap:12px; align-items:baseline; font-size:14px }
+.wh-next-lbl{ flex:none; font-family:var(--wh-mono); font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--wh-mute) }
+.wh-next b{ font-weight:700 }
+.wh-next em{ font-style:normal; color:var(--wh-mute) }
+
+@media (max-width:900px){ .wh-in{ grid-template-columns:1fr; gap:38px; padding-block:44px 50px } }
+@media (prefers-reduced-motion:reduce){ #wpfw-hero *{ animation:none !important; transition:none !important } }
+</style>
+
+<script>
+(function () {
+  'use strict';
+  if (window.__wpfwHeroInit) return;
+  window.__wpfwHeroInit = true;
+
+  /* ===================== CONFIG ===================== */
+  var FEED       = 'https://confessor.wpfwfm.org/playlist/get_current.php';
+  var PIX        = 'https://confessor.wpfwfm.org/pix/';
+  var REFRESH_MS = 20000;
+  var TZ         = 'America/New_York';
+  /* Port 9000 is required -- without it the connection silently never
+     completes. Same mounts, same order, as the sticky bar. */
+  var STREAMS = [
+    'https://streams.pacifica.org:9000/wpfw_128',
+    'https://streams.pacifica.org:9000/wpfw',
+    'https://streams.pacifica.org:9000/wpfw_64'
+  ];
+  /* ================================================== */
+
+  var $ = function (id) { return document.getElementById(id); };
+  var card = $('wh-card'); if (!card) return;
+
+  var PLAY = '▶', PAUSE = '❚❚';
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  /* The feed HTML-escapes its own text -- sh_djname arrives as
+     "DJ Zee-Lion &amp; Kim Bey" -- so it is decoded once here and
+     escaped again on the way into the DOM. */
+  function decode(s) {
+    var t = document.createElement('textarea');
+    t.innerHTML = String(s == null ? '' : s);
+    return t.value;
+  }
+  function clean(s) { return decode(s).replace(/\s+/g, ' ').trim(); }
+
+  /* ---------- the stream ---------- */
+
+  var audio = new Audio();
+  audio.preload = 'none';
+  var btn = $('wh-play'), attempt = 0;
+
+  function paint(state) {
+    if (!btn) return;
+    btn.classList.toggle('is-playing', state === 'playing');
+    btn.classList.toggle('is-loading', state === 'loading');
+    btn.textContent = state === 'playing' ? PAUSE : PLAY;
+    btn.setAttribute('aria-label',
+      state === 'playing' ? 'Pause the live stream' :
+      state === 'loading' ? 'Connecting' : 'Listen live');
+  }
+  function tryStream(i) {
+    if (i >= STREAMS.length) { paint('idle'); return; }
+    attempt = i;
+    audio.src = STREAMS[i];
+    paint('loading');
+    var p = audio.play();
+    if (p && typeof p.catch === 'function') p.catch(function () { tryStream(i + 1); });
+  }
+  if (btn) {
+    btn.addEventListener('click', function () {
+      if (!audio.paused) { audio.pause(); return; }
+      tryStream(0);
+    });
+  }
+  audio.addEventListener('playing', function () { paint('playing'); });
+  audio.addEventListener('pause',   function () { paint('idle'); });
+  /* A mount that dies mid-listen falls through to the next one. */
+  audio.addEventListener('error',   function () { tryStream(attempt + 1); });
+  paint('idle');
+
+  /* ---------- the clock ---------- */
+
+  /* Seconds since midnight in the station's own timezone, whatever the
+     visitor's clock says. */
+  function secondsIntoDay() {
+    var now = new Date();
+    var h = Number(now.toLocaleString('en-US', { timeZone: TZ, hour: 'numeric', hour12: false }));
+    var m = Number(now.toLocaleString('en-US', { timeZone: TZ, minute: 'numeric' }));
+    var s = Number(now.toLocaleString('en-US', { timeZone: TZ, second: 'numeric' }));
+    return (h % 24) * 3600 + m * 60 + s;
+  }
+
+  var slot = null;   /* { start, len } in seconds, from the last feed read */
+
+  function tickProgress() {
+    var bar = $('wh-bar'), el = $('wh-elapsed');
+    if (!slot || !slot.len) { if (bar) bar.style.width = '0'; return; }
+    var into = secondsIntoDay() - slot.start;
+    /* A show that began before midnight and is still running reads as a
+       large negative here, so wrap it forward a day. */
+    if (into < 0) into += 86400;
+    var frac = Math.max(0, Math.min(1, into / slot.len));
+    if (bar) bar.style.width = (frac * 100).toFixed(2) + '%';
+    if (el) {
+      var mins = Math.floor(into / 60);
+      el.textContent = (into < 0 || into > slot.len) ? ''
+        : mins < 1 ? 'just started'
+        : mins < 60 ? mins + ' min in'
+        : Math.floor(mins / 60) + ' hr ' + (mins % 60) + ' min in';
+    }
+  }
+
+  /* ---------- render ---------- */
+
+  function render(cur, nxt) {
+    if (cur.sh_name) $('wh-show').textContent = clean(cur.sh_name);
+    $('wh-dj').textContent   = clean(cur.sh_djname);
+    $('wh-desc').textContent = clean(cur.sh_desc);
+
+    /* sh_photo is a full URL on the current show and a bare filename on
+       the next one, so both shapes are accepted. */
+    var art = $('wh-art');
+    var src = clean(cur.sh_photo);
+    if (src && !/^https?:/i.test(src)) src = PIX + src;
+    /* pix/WPFW.png is the feed's own "no artwork" answer -- the station
+       mark already sits in the markup, so there is nothing to swap in. */
+    if (src && !/\/WPFW\.png$/i.test(src)) {
+      var img = new Image();
+      img.onload = function () { art.innerHTML = ''; art.appendChild(img); };
+      img.alt = '';
+      img.src = src;
+    }
+
+    var track = $('wh-track');
+    var song = clean(cur.pl_song), artist = clean(cur.pl_artist);
+    if (song) {
+      track.innerHTML = '<span>Now playing</span> <b>' + esc(song) + '</b>' +
+                        (artist ? ' &middot; ' + esc(artist) : '');
+      track.hidden = false;
+    } else {
+      track.hidden = true;
+    }
+
+    $('wh-start').textContent = clean(cur.cur_start);
+    $('wh-end').textContent   = clean(cur.cur_end);
+
+    slot = { start: Number(cur.sh_shour) || 0, len: Number(cur.sh_len) || 0 };
+    tickProgress();
+
+    var next = $('wh-next');
+    if (nxt && nxt.sh_name) {
+      $('wh-next-txt').innerHTML =
+        '<b>' + esc(clean(nxt.nxt_start)) + '</b> &nbsp;' + esc(clean(nxt.sh_name)) +
+        (nxt.sh_djname ? ' <em>with ' + esc(clean(nxt.sh_djname)) + '</em>' : '');
+      next.hidden = false;
+    } else {
+      next.hidden = true;
+    }
+  }
+
+  function load() {
+    if (typeof window.fetch !== 'function') return;
+    fetch(FEED, { credentials: 'omit', cache: 'no-cache' })
+      .then(function (r) { return r.json(); })
+      .then(function (rows) {
+        var cur = null, nxt = null;
+        for (var i = 0; i < rows.length; i++) {
+          if (rows[i].current) cur = rows[i].current;
+          if (rows[i].next)    nxt = rows[i].next;
+        }
+        if (cur) render(cur, nxt);
+      })
+      .catch(function () { /* keep whatever is on screen */ });
+  }
+
+  load();
+  setInterval(load, REFRESH_MS);
+  setInterval(tickProgress, 15000);
+
+  /* ---------- the waveform ---------- */
+
+  var cv = $('wh-wave'); if (!cv) return;
+  var ctx = cv.getContext('2d');
+  var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var w = 0, h = 0, t = 0;
+
+  function size() {
+    var r = cv.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = r.width; h = r.height;
+    cv.width  = Math.max(1, Math.round(w * dpr));
+    cv.height = Math.max(1, Math.round(h * dpr));
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    var mid = h * 0.52;
+    for (var k = 0; k < 7; k++) {
+      ctx.beginPath();
+      var amp = (h * 0.055) * (1 + k * 0.52);
+      var freq = 0.0042 + k * 0.0011;
+      var phase = t * (0.9 + k * 0.16) + k * 1.05;
+      for (var x = 0; x <= w; x += 4) {
+        var env = Math.sin((x / Math.max(w, 1)) * Math.PI);
+        var y = mid + Math.sin(x * freq + phase) * amp * env;
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = 'rgba(200,18,16,' + (0.30 - k * 0.028).toFixed(3) + ')';
+      ctx.lineWidth = 1.15;
+      ctx.stroke();
+    }
+  }
+  function frame() { t += 0.012; draw(); requestAnimationFrame(frame); }
+
+  size(); draw();
+  if (!still) requestAnimationFrame(frame);
+  window.addEventListener('resize', function () { size(); draw(); });
+})();
+</script>

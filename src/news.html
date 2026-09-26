@@ -1,0 +1,201 @@
+<!-- =====================================================================
+     WPFW HOMEPAGE  ·  BAND 5  ·  WHAT THE STATION IS SAYING
+     =====================================================================
+     One Squarespace code block.
+
+     DATA
+         /news?format=json      -- same origin, no CORS, no proxy, no key
+     Squarespace publishes every collection as JSON at its own path. This
+     reads the news collection and takes the four most recent by publishOn.
+
+     Each entry carries assetUrl, which is the post's featured image. The
+     sources run from 1532x1908 to 6120x8160, so the card fixes a 3:2 crop
+     and appends Squarespace's own ?format=800w rather than shipping an
+     eight-thousand-pixel original to a 270px card.
+     ===================================================================== -->
+
+<section id="wpfw-news" hidden>
+  <div class="wn-grid" id="wn-grid"></div>
+  <div class="wn-foot"><a class="wn-link" href="/news">All news &rarr;</a></div>
+</section>
+
+<style>
+#wpfw-news{
+  --wn-red:#C81210;
+  --wn-paper:#F5F0E7; --wn-hover:#F9E9E2;
+  --wn-ink:#16110D; --wn-dim:#4C4239; --wn-mute:#6B5D50;
+  --wn-rule:#D6CBBA; --wn-rule-soft:#E4DCCE;
+  --wn-head:"Young Serif",Georgia,serif;
+  --wn-body:"Bitter",Georgia,"Times New Roman",serif;
+  --wn-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  font-family:var(--wn-body); color:var(--wn-ink);
+}
+#wpfw-news *,#wpfw-news *::before,#wpfw-news *::after{box-sizing:border-box}
+#wpfw-news [hidden]{display:none !important}
+
+.wn-grid{
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:1px; background:var(--wn-rule-soft); border:1px solid var(--wn-rule-soft);
+}
+.wn-card{
+  background:var(--wn-paper); padding:0; display:flex; flex-direction:column;
+  text-decoration:none; color:inherit; transition:background .16s ease;
+}
+.wn-card:hover{ background:var(--wn-hover) }
+.wn-card:hover h3{ color:var(--wn-red) }
+
+/* The ground shows for a post with no featured image, and behind one
+   that fails to load -- the script drops any <img> that errors rather
+   than leaving a broken frame in the row. */
+.wn-thumb{
+  position:relative; display:block; aspect-ratio:3/2; max-width:100%;
+  overflow:hidden; border-bottom:1px solid var(--wn-rule-soft);
+  background:
+    radial-gradient(115% 95% at 22% 18%, var(--ph-a,rgba(245,70,59,.5)), transparent 62%),
+    radial-gradient(100% 85% at 82% 82%, var(--ph-b,rgba(201,151,63,.4)), transparent 58%),
+    linear-gradient(158deg,#1D100C 0%,#0C0A09 56%,#27130F 100%);
+}
+.wn-thumb::after{
+  content:""; position:absolute; inset:0;
+  background-image:radial-gradient(rgba(239,231,220,.14) 1px, transparent 1.15px);
+  background-size:7px 7px;
+}
+.wn-thumb img{ position:absolute; inset:0; z-index:1; width:100%; height:100%; object-fit:cover; display:block }
+
+.wn-body{ padding:20px; display:flex; flex-direction:column; gap:9px }
+.wn-dt{ font-family:var(--wn-mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--wn-mute) }
+.wn-card h3{
+  font-family:var(--wn-head); font-weight:400; font-size:19px;
+  line-height:1.2; margin:0; transition:color .15s ease; text-wrap:balance;
+}
+.wn-card p{ margin:0; font-size:13.5px; color:var(--wn-dim); line-height:1.55 }
+
+.wn-foot{ display:flex; justify-content:flex-end; margin-top:22px }
+.wn-link{
+  font-family:var(--wn-mono); font-size:11.5px; letter-spacing:.11em;
+  text-transform:uppercase; text-decoration:none; color:var(--wn-ink);
+  border-bottom:1px solid var(--wn-red); padding-bottom:3px;
+}
+.wn-link:hover{ color:var(--wn-red) }
+
+@media (max-width:900px){ .wn-grid{ grid-template-columns:repeat(2,1fr) } }
+@media (max-width:560px){ .wn-grid{ grid-template-columns:1fr } }
+</style>
+
+<script>
+(function () {
+  'use strict';
+  if (window.__wpfwNewsInit) return;
+  window.__wpfwNewsInit = true;
+
+  /* ===================== CONFIG ===================== */
+  var SOURCE     = '/news?format=json';
+  var LIMIT      = 4;
+  var BLURB      = 130;     /* characters */
+  var IMG_WIDTH  = '800w';  /* Squarespace resizes on its own CDN */
+  var TIMEOUT_MS = 10000;
+  var TZ         = 'America/New_York';
+  /* Grounds behind a post with no image. Cycled in order, so four
+     imageless posts do not render as four identical grey boxes. */
+  var GROUNDS = [
+    ['rgba(245,70,59,.55)',  'rgba(140,90,158,.42)'],
+    ['rgba(201,151,63,.55)', 'rgba(184,104,58,.42)'],
+    ['rgba(62,110,142,.55)', 'rgba(79,98,166,.42)'],
+    ['rgba(200,18,16,.55)',  'rgba(110,140,67,.42)']
+  ];
+  /* ================================================== */
+
+  var root = document.getElementById('wpfw-news');
+  var grid = document.getElementById('wn-grid');
+  if (!root || !grid) return;
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  /* Squarespace excerpts are HTML, and the body is worse. A post with no
+     excerpt falls through to body -- and at least one of yours opens with
+     an inline <style> block, whose contents textContent will happily hand
+     back as prose. Those elements come out before the text does. */
+  function strip(html) {
+    var d = document.createElement('div');
+    d.innerHTML = String(html == null ? '' : html);
+    var junk = d.querySelectorAll('style, script, noscript');
+    for (var i = 0; i < junk.length; i++) junk[i].remove();
+    return (d.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+  function shorten(text, max) {
+    var s = strip(text);
+    if (s.length <= max) return s;
+    var head = s.slice(0, max + 1);
+    var stop = Math.max(head.lastIndexOf('. '), head.lastIndexOf('? '), head.lastIndexOf('! '));
+    if (stop > max * 0.5) return s.slice(0, stop + 1);
+    var sp = head.lastIndexOf(' ');
+    return s.slice(0, sp > 0 ? sp : max).replace(/[,;:—-]+$/, '') + '…';
+  }
+  function dateline(ms, cats) {
+    var d = new Date(Number(ms));
+    var when = isNaN(d.getTime()) ? ''
+      : d.toLocaleDateString('en-US', { timeZone: TZ, month: 'long', day: 'numeric' });
+    var tag = (cats && cats.length) ? cats[0] : '';
+    return tag ? when + ' · ' + tag : when;
+  }
+  /* assetUrl sometimes comes back as a folder with no filename, which is
+     Squarespace's way of saying the post has no usable image. */
+  function imageOf(item) {
+    var u = String(item.assetUrl || '').trim();
+    if (!u || /\/$/.test(u)) return '';
+    return u + (u.indexOf('?') < 0 ? '?' : '&') + 'format=' + IMG_WIDTH;
+  }
+
+  function card(item, i) {
+    var g = GROUNDS[i % GROUNDS.length];
+    var src = imageOf(item);
+    var blurb = shorten(item.excerpt || item.body, BLURB);
+
+    return '<a class="wn-card" href="' + esc(item.fullUrl || '/news') + '">' +
+      '<div class="wn-thumb" style="--ph-a:' + g[0] + ';--ph-b:' + g[1] + '">' +
+        (src ? '<img src="' + esc(src) + '" alt="" loading="lazy">' : '') +
+      '</div>' +
+      '<div class="wn-body">' +
+        '<span class="wn-dt">' + esc(dateline(item.publishOn, item.categories)) + '</span>' +
+        '<h3>' + esc(item.title || 'Untitled') + '</h3>' +
+        (blurb ? '<p>' + esc(blurb) + '</p>' : '') +
+      '</div>' +
+    '</a>';
+  }
+
+  function render(items) {
+    var live = items
+      .filter(function (it) { return it && it.title && it.publishOn; })
+      .sort(function (a, b) { return Number(b.publishOn) - Number(a.publishOn); })
+      .slice(0, LIMIT);
+
+    if (!live.length) { root.remove(); return; }
+
+    grid.innerHTML = live.map(card).join('');
+    grid.querySelectorAll('img').forEach(function (im) {
+      im.addEventListener('error', function () { im.remove(); });
+      if (im.complete && im.naturalWidth === 0) im.remove();
+    });
+    root.hidden = false;
+  }
+
+  if (typeof window.fetch !== 'function') { root.remove(); return; }
+
+  var ctrl  = (typeof AbortController === 'function') ? new AbortController() : null;
+  var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, TIMEOUT_MS);
+  var opts  = { credentials: 'same-origin', cache: 'no-cache' };
+  if (ctrl) opts.signal = ctrl.signal;
+
+  fetch(SOURCE, opts)
+    .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+    .then(function (j) {
+      clearTimeout(timer);
+      if (!j || !j.items) throw new Error('no items');
+      render(j.items);
+    })
+    .catch(function () { clearTimeout(timer); root.remove(); });
+})();
+</script>
