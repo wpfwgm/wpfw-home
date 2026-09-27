@@ -40,8 +40,12 @@ BANDS = [
     dict(key="hero",   file="hero.html",           ground="night",
          stamp=None, title=None),
 
+    # "Recently", not "Earlier today". Transcription runs overnight and a
+    # write-up is only shown once it has been approved, so the freshest
+    # thing this band can ever carry is last night. The old eyebrow
+    # promised same-day and made a working rail look broken.
     dict(key="missed", file="missed-it.html",      ground="paper",
-         stamp=("Earlier today", "Archive"),
+         stamp=("Recently", "Archive"),
          title="Missed it? It&rsquo;s still up."),
 
     dict(key="signup", file="newsletter.html",     ground="paper2",

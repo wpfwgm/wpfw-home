@@ -79,7 +79,7 @@
     "key": "missed",
     "ground": "paper",
     "stamp": [
-      "Earlier today",
+      "Recently",
       "Archive"
     ],
     "title": "Missed it? It&rsquo;s still up."
