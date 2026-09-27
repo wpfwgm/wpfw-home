@@ -13,4 +13,8 @@
 <div class="col">
   <div data-wpfw-home="page"></div>
 </div>
-<script src="/home.js"></script>
+<script>
+  var sc = document.createElement('script');
+  sc.src = '/home.js?t=' + Date.now();
+  document.body.appendChild(sc);
+</script>

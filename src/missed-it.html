@@ -17,6 +17,14 @@
      Audio is NOT proxied. An <audio> src is not a CORS read, so the MP3s
      stream straight off archive.wpfwfm.org.
 
+     CLICKING A CARD goes to /archive#wpfw-ep=<id>, which the archive embed
+     reads on load and opens that episode's sheet. That is the archive's own
+     dialog -- song credits with seekable offsets, the download rules for
+     music programmes, tag filtering, the rest of the programme's episodes.
+     Rebuilding any of that here would mean two designs of one thing, drifting
+     apart. The play button still plays in place, which mirrors the archive,
+     where the artwork plays and the rest of the row opens the sheet.
+
      WHAT IT SHOWS
      The six most recent episodes that have an approved write-up. A show
      that has aired but not yet been transcribed simply is not here yet --
@@ -69,7 +77,21 @@
   display:flex; flex-direction:column; gap:16px;
   transition:background .16s ease;
 }
+.wm-card{ position:relative }
 .wm-card:hover{ background:var(--wm-hover) }
+.wm-card:hover .wm-cardlink{ color:var(--wm-red) }
+
+/* One link, stretched across the whole card, so the card is clickable
+   without wrapping a <button> in an <a> -- which is invalid, and which
+   costs you middle-click, the status-bar URL and keyboard focus. The
+   play button is lifted above it so it still plays in place. */
+.wm-cardlink{
+  color:inherit; text-decoration:none;
+  transition:color .15s ease;
+}
+.wm-cardlink::after{ content:''; position:absolute; inset:0; z-index:1 }
+.wm-card .wm-play,
+.wm-card .wm-tag{ position:relative; z-index:2 }
 
 .wm-top{ display:flex; gap:15px; align-items:center }
 
@@ -153,6 +175,11 @@
   var DATA_URL   = 'https://wpfwgm.github.io/wpfw-archive-data/archive.json';
   var LIMIT      = 6;
   var ARCHIVE    = '/archive';
+  /* The archive embed reads this off the hash on load and opens that
+     episode's sheet. Same dialog the archive itself uses -- songs,
+     download rules, tag filtering, the rest of the programme's episodes
+     -- rather than a second one built here that would drift from it. */
+  var EP_LINK    = function (id) { return ARCHIVE + '#wpfw-ep=' + encodeURIComponent(id); };
   var EXCERPT    = 165;      /* characters, trimmed to a sentence or word */
   var MAX_TAGS   = 2;
   var SHOW_ART   = false;    /* true = programme logo instead of play button */
@@ -286,7 +313,8 @@
       '<div class="wm-top">' +
         lead +
         '<div class="wm-id">' +
-          '<h3>' + esc(prog) + '</h3>' +
+          '<h3><a class="wm-cardlink" href="' + esc(EP_LINK(row.id)) + '">' +
+            esc(prog) + '</a></h3>' +
           (host ? '<p class="wm-host">' + esc(host) + '</p>' : '') +
         '</div>' +
         '<time class="wm-time" datetime="' + new Date(row.d * 1000).toISOString() + '">' +
@@ -317,7 +345,8 @@
 
     rail.addEventListener('click', function (ev) {
       var btn = ev.target.closest ? ev.target.closest('.wm-play') : null;
-      if (btn) toggle(btn, btn.getAttribute('data-src'));
+      /* Sitting above the stretched link, so this never navigates. */
+      if (btn) { ev.preventDefault(); toggle(btn, btn.getAttribute('data-src')); }
     });
 
     var more = document.getElementById('wm-more');
