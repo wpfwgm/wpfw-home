@@ -546,11 +546,12 @@
 
   var q = document.getElementById('wv-quorum');
   if (q) {
-    /* Plain words. "Quorum", "the bylaws require" and "for want of votes"
-       are the election office's language, not a listener's, and the point
-       here is only that too few people have voted for it to count. */
+    /* Plain words, with one exception: quorum stays. It is the term the
+       ballot email and the election site both use, so a member who has
+       been following this already knows it, and the sentence says what
+       it means for anyone who does not. */
     q.innerHTML = 'Voting closes <b>September 30 at 11:59 PM Pacific</b>. ' +
-      'A minimum number of votes is needed for the result to stand, and as of ' +
+      'A minimum number of votes is needed to meet quorum, and as of ' +
       QUORUM_ASOF + ' about <b>10%</b> of that number had come in.';
   }
 
