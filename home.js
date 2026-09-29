@@ -50,6 +50,7 @@
 
   var STYLES = {
   "hero": "#wpfw-hero{\n  --wh-red:#C81210; --wh-red-lt:#F5463B;\n  --wh-ink:#0C0A09; --wh-fg:#EFE7DC; --wh-dim:#C4B7A8; --wh-mute:#8E8074;\n  --wh-rule:#2E2520; --wh-brass:#C9973F;\n  --wh-head:\"Young Serif\",Georgia,serif;\n  --wh-body:\"Bitter\",Georgia,\"Times New Roman\",serif;\n  --wh-mono:\"IBM Plex Mono\",ui-monospace,Menlo,monospace;\n  position:relative; overflow:hidden;\n  background:var(--wh-ink); color:var(--wh-fg);\n  font-family:var(--wh-body);\n}\n#wpfw-hero *,#wpfw-hero *::before,#wpfw-hero *::after{box-sizing:border-box}\n#wpfw-hero [hidden]{display:none !important}\n\n#wh-wave{ position:absolute; inset:0; width:100%; height:100%; opacity:.5; pointer-events:none }\n\n.wh-in{\n  position:relative; width:100%; max-width:1180px;\n  margin-inline:auto; padding-inline:20px; padding-block:60px 66px;\n  display:grid; grid-template-columns:1.05fr .95fr; gap:52px; align-items:center;\n}\n\n.wh-lockup{ min-width:0 }\n.wh-kicker{\n  font-family:var(--wh-mono); font-size:10.5px; letter-spacing:.22em;\n  text-transform:uppercase; color:var(--wh-mute); margin-bottom:18px;\n}\n.wh-lockup h1{ margin:0; font-family:var(--wh-head); font-weight:400; line-height:.86; letter-spacing:-.02em }\n.wh-l1{ display:block; font-size:clamp(56px,10.5vw,116px) }\n.wh-l2{\n  display:block; color:var(--wh-red-lt); font-family:var(--wh-body);\n  font-style:italic; font-weight:400; font-size:clamp(28px,5.1vw,56px);\n  line-height:1; margin:6px 0 4px;\n}\n.wh-l3{ display:block; font-size:clamp(44px,8.4vw,92px) }\n.wh-lockup p{ margin:24px 0 0; max-width:34ch; color:var(--wh-dim); font-size:16.5px }\n\n/* Sits on the hero's own ground so the waveform runs through it. */\n.wh-card{ background:transparent; border:1px solid var(--wh-rule); border-top:3px solid var(--wh-red); padding:24px }\n.wh-card-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px }\n.wh-dot{\n  display:inline-flex; align-items:center; gap:7px;\n  font-family:var(--wh-mono); font-size:10.5px; letter-spacing:.18em;\n  text-transform:uppercase; color:var(--wh-red-lt);\n}\n.wh-dot::before{\n  content:\"\"; width:7px; height:7px; border-radius:50%;\n  background:var(--wh-red-lt); animation:wh-pulse 2.4s ease-in-out infinite;\n}\n@keyframes wh-pulse{ 0%,100%{opacity:1} 50%{opacity:.25} }\n.wh-elapsed{ font-family:var(--wh-mono); font-size:11px; color:var(--wh-mute); font-variant-numeric:tabular-nums }\n\n.wh-body{ display:flex; gap:18px; align-items:flex-start }\n.wh-art{\n  flex:none; width:96px; aspect-ratio:1; max-width:100%;\n  display:grid; place-items:center; overflow:hidden;\n  background:#0C0A09; border:1px solid var(--wh-rule);\n}\n.wh-art img{ width:100%; height:100%; object-fit:cover; display:block }\n.wh-mark{ display:flex; flex-direction:column; align-items:center; gap:2px }\n.wh-mark b{ font-family:var(--wh-head); font-weight:400; font-size:23px; line-height:1; color:var(--wh-fg) }\n.wh-mark i{ font-family:var(--wh-mono); font-style:normal; font-weight:600; font-size:12px; color:var(--wh-red-lt) }\n\n.wh-id{ min-width:0 }\n.wh-id h2{ font-family:var(--wh-head); font-weight:400; font-size:26px; line-height:1.14; margin:0 0 6px; color:var(--wh-fg) }\n.wh-dj{ margin:0; color:var(--wh-brass); font-size:14.5px }\n.wh-desc{ margin:8px 0 0; color:var(--wh-mute); font-size:14px }\n\n.wh-play{\n  flex:none; margin-left:auto;\n  width:62px; height:62px; border-radius:50%; border:none;\n  background:var(--wh-red); color:#fff; font-size:20px; line-height:1;\n  display:grid; place-items:center; cursor:pointer;\n  transition:background .15s ease, transform .15s ease;\n}\n.wh-play:hover{ background:var(--wh-red-lt); transform:scale(1.06) }\n.wh-play.is-playing{ background:#EFE7DC; color:#0C0A09 }\n.wh-play.is-loading{ opacity:.7 }\n\n.wh-track{\n  margin:18px 0 0; font-size:14px; color:var(--wh-dim);\n  display:flex; gap:9px; align-items:baseline; flex-wrap:wrap;\n}\n.wh-track b{ font-weight:400; color:var(--wh-fg) }\n.wh-track span{ font-family:var(--wh-mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--wh-mute) }\n\n.wh-prog{ height:3px; background:var(--wh-rule); margin:20px 0 14px; position:relative; overflow:hidden }\n.wh-prog i{ position:absolute; inset:0 auto 0 0; display:block; width:0; background:var(--wh-red); transition:width .6s linear }\n.wh-times{ display:flex; justify-content:space-between; font-family:var(--wh-mono); font-size:11px; color:var(--wh-mute); font-variant-numeric:tabular-nums }\n\n.wh-next{ margin-top:20px; padding-top:16px; border-top:1px solid var(--wh-rule); display:flex; gap:12px; align-items:baseline; font-size:14px }\n.wh-next-lbl{ flex:none; font-family:var(--wh-mono); font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--wh-mute) }\n.wh-next b{ font-weight:700 }\n.wh-next em{ font-style:normal; color:var(--wh-mute) }\n\n@media (max-width:900px){ .wh-in{ grid-template-columns:1fr; gap:38px; padding-block:44px 50px } }\n@media (prefers-reduced-motion:reduce){ #wpfw-hero *{ animation:none !important; transition:none !important } }",
+  "vote": "/* The one band with a ground of its own. It is a deadline, it is on the\n   page for a few days, and it should not look like the furniture. */\n#wpfw-vote{ font-family:var(--body); color:#F7EFE7 }\n#wpfw-vote *,#wpfw-vote *::before,#wpfw-vote *::after{ box-sizing:border-box }\n\n.wv-grid{\n  display:grid; grid-template-columns:1.25fr .75fr; gap:44px;\n  align-items:start;\n}\n.wv-lede{\n  margin:0 0 16px; font-size:17px; line-height:1.55;\n  color:#F7EFE7; max-width:46ch;\n}\n.wv-quorum{\n  margin:0; font-size:14.5px; line-height:1.6;\n  color:#F0C9C4; max-width:52ch;\n}\n.wv-quorum b{ color:#fff; font-weight:700 }\n\n.wv-do{ display:flex; flex-direction:column; gap:10px; align-items:stretch }\n.wv-btn{\n  display:block; text-align:center; text-decoration:none;\n  font-family:var(--mono); font-size:11.5px; letter-spacing:.12em;\n  text-transform:uppercase; padding:14px 20px;\n  background:#F7EFE7; color:#8E0F0D;\n  transition:background .15s ease, color .15s ease;\n}\n.wv-btn:hover{ background:#fff; color:#8E0F0D }\n.wv-btn.ghost{\n  background:transparent; color:#F7EFE7;\n  border:1px solid rgba(247,239,231,.45);\n}\n.wv-btn.ghost:hover{ background:rgba(247,239,231,.12); color:#fff }\n.wv-fine{\n  margin:6px 0 0; font-size:12px; line-height:1.6; color:#EBBDB8;\n}\n.wv-fine b{ color:#fff; font-weight:600 }\n.wv-fine a{ color:#fff; text-decoration:underline; text-underline-offset:2px }\n\n@media (max-width:900px){ .wv-grid{ grid-template-columns:1fr; gap:26px } }",
   "missed": "/* Scoped under #wpfw-missed and prefixed .wm-, so it cannot inherit from\n   or leak into Squarespace's own styles. Paper band: this rail sits on\n   the light ground between the hero and the sign-up strip. */\n#wpfw-missed{\n  --wm-red:#C81210; --wm-red-lt:#F5463B;\n  --wm-paper:#F5F0E7; --wm-paper-2:#EBE3D6; --wm-hover:#F9E9E2;\n  --wm-ink:#16110D; --wm-dim:#4C4239; --wm-mute:#6B5D50;\n  --wm-rule:#D6CBBA; --wm-rule-soft:#E4DCCE;\n  --wm-head:\"Young Serif\",Georgia,serif;\n  --wm-body:\"Bitter\",Georgia,\"Times New Roman\",serif;\n  --wm-mono:\"IBM Plex Mono\",ui-monospace,Menlo,monospace;\n  font-family:var(--wm-body); color:var(--wm-ink);\n}\n#wpfw-missed *,#wpfw-missed *::before,#wpfw-missed *::after{box-sizing:border-box}\n#wpfw-missed [hidden]{display:none !important}\n\n/* One-pixel gaps in a shared ground, so the six cards read as a grid\n   rather than six floating boxes. */\n.wm-rail{\n  display:grid; grid-template-columns:repeat(3,1fr);\n  gap:1px; background:var(--wm-rule-soft);\n  border:1px solid var(--wm-rule-soft);\n}\n.wm-card{\n  background:var(--wm-paper); padding:24px 22px;\n  display:flex; flex-direction:column; gap:16px;\n  transition:background .16s ease;\n}\n.wm-card{ position:relative }\n.wm-card:hover{ background:var(--wm-hover) }\n.wm-card:hover .wm-cardlink{ color:var(--wm-red) }\n\n/* One link, stretched across the whole card, so the card is clickable\n   without wrapping a <button> in an <a> -- which is invalid, and which\n   costs you middle-click, the status-bar URL and keyboard focus. The\n   play button is lifted above it so it still plays in place. */\n.wm-cardlink{\n  color:inherit; text-decoration:none;\n  transition:color .15s ease;\n}\n.wm-cardlink::after{ content:''; position:absolute; inset:0; z-index:1 }\n.wm-card .wm-play,\n.wm-card .wm-tag{ position:relative; z-index:2 }\n\n.wm-top{ display:flex; gap:15px; align-items:center }\n\n.wm-play{\n  flex:none; width:48px; height:48px; border-radius:50%;\n  border:none; background:var(--wm-red); color:#fff;\n  font-size:15px; line-height:1; cursor:pointer;\n  display:grid; place-items:center;\n  transition:background .15s ease, transform .15s ease;\n}\n.wm-play:hover{ background:var(--wm-red-lt); transform:scale(1.06) }\n.wm-play.is-playing{ background:var(--wm-ink) }\n.wm-play.is-loading{ opacity:.65 }\n\n/* Optional programme artwork in place of the button. Off by default --\n   only 24 of 119 programmes have a logo, so switching it on makes six\n   cards look like two designs. SHOW_ART in the script turns it on. */\n.wm-art{\n  flex:none; width:48px; height:48px; overflow:hidden;\n  display:grid; place-items:center; border:1px solid var(--wm-rule);\n}\n.wm-art img{ width:100%; height:100%; display:block }\n\n.wm-id{ min-width:0 }\n.wm-id h3{\n  font-family:var(--wm-mono); font-weight:600;\n  font-size:11.5px; letter-spacing:.09em; text-transform:uppercase;\n  line-height:1.35; margin:0 0 3px; color:var(--wm-ink);\n}\n.wm-host{ margin:0; font-size:12.5px; color:#8A6520 }\n\n.wm-time{\n  flex:none; margin-left:auto; align-self:flex-start;\n  font-family:var(--wm-mono); font-size:10.5px; letter-spacing:.08em;\n  font-variant-numeric:tabular-nums;\n  padding:5px 9px; border:1px solid var(--wm-rule);\n  background:var(--wm-paper-2); color:var(--wm-dim);\n  transition:border-color .16s ease, color .16s ease;\n}\n.wm-card:hover .wm-time{ border-color:var(--wm-red); color:var(--wm-red) }\n\n/* The write-up is the reason anyone presses play, so it carries the card. */\n.wm-excerpt{\n  margin:0;\n  font-family:var(--wm-head); font-weight:400;\n  font-size:17px; line-height:1.34; color:var(--wm-ink);\n  display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical;\n  overflow:hidden; min-height:calc(4 * 1.34em);\n}\n\n.wm-tags{ margin-top:auto; display:flex; flex-wrap:wrap; gap:6px }\n.wm-tag{\n  font-family:var(--wm-mono); font-size:9.5px; letter-spacing:.08em;\n  text-transform:uppercase; padding:3px 7px;\n  border:1px solid var(--wm-rule); color:var(--wm-mute);\n}\n\n.wm-foot{ display:flex; justify-content:flex-end; margin-top:22px }\n.wm-link{\n  font-family:var(--wm-mono); font-size:11.5px; letter-spacing:.11em;\n  text-transform:uppercase; text-decoration:none; color:var(--wm-ink);\n  border-bottom:1px solid var(--wm-red); padding-bottom:3px; white-space:nowrap;\n}\n.wm-link:hover{ color:var(--wm-red) }\n\n@media (max-width:900px){ .wm-rail{ grid-template-columns:repeat(2,1fr) } }\n@media (max-width:560px){ .wm-rail{ grid-template-columns:1fr } }\n@media (prefers-reduced-motion:reduce){\n  #wpfw-missed *{ animation:none !important; transition:none !important }\n}",
   "signup": "#wpfw-signup{\n  --wn-red:#C81210; --wn-red-lt:#F5463B;\n  --wn-paper:#EBE3D6;                 /* one step deeper than the rail above */\n  --wn-ink:#16110D; --wn-dim:#4C4239; --wn-mute:#6B5D50;\n  --wn-rule:#D6CBBA;\n  --wn-head:\"Young Serif\",Georgia,serif;\n  --wn-body:\"Bitter\",Georgia,\"Times New Roman\",serif;\n  --wn-mono:\"IBM Plex Mono\",ui-monospace,Menlo,monospace;\n  background:var(--wn-paper); color:var(--wn-ink);\n  font-family:var(--wn-body);\n  border-top:1px solid var(--wn-rule);\n}\n#wpfw-signup *,#wpfw-signup *::before,#wpfw-signup *::after{box-sizing:border-box}\n\n.wn-in{\n  width:100%; max-width:1180px; margin-inline:auto;\n  padding-inline:20px; padding-block:30px 32px;\n  display:grid; grid-template-columns:1fr minmax(320px,440px);\n  gap:26px 48px; align-items:center;\n}\n.wn-say h2{\n  font-family:var(--wn-head); font-weight:400;\n  font-size:clamp(21px,2.6vw,27px); line-height:1.14;\n  margin:0 0 6px; text-wrap:balance; color:var(--wn-ink);\n}\n.wn-say p{ margin:0; color:var(--wn-dim); font-size:15px; max-width:46ch }\n\n/* ---- strip CC's own chrome ------------------------------------- */\n#wn-slot .ctct-form-container,\n#wn-slot .ctct-form-embed,\n#wn-slot .ctct-form-defaults{\n  background:transparent !important; border:none !important;\n  box-shadow:none !important; padding:0 !important; margin:0 !important;\n  max-width:none !important; width:100% !important;\n}\n\n/* ---- the form becomes the grid --------------------------------- */\n#wn-slot form.ctct-form-custom{\n  display:grid !important;\n  grid-template-columns:1fr auto;\n  gap:0 !important; margin:0 !important; padding:0 !important;\n  background:transparent !important; border:none !important;\n}\n\n/* CC's heading, description and label: out of sight, still in the DOM\n   so the input keeps an accessible name. */\n#wn-slot .ctct-form-header,\n#wn-slot .ctct-form-text,\n#wn-slot .ctct-form-label{\n  position:absolute !important; width:1px !important; height:1px !important;\n  padding:0 !important; margin:-1px !important; overflow:hidden !important;\n  clip:rect(0 0 0 0) !important; white-space:nowrap !important; border:0 !important;\n}\n\n#wn-slot .ctct-form-field{\n  grid-column:1; grid-row:1;\n  display:block !important; margin:0 !important; padding:0 !important;\n}\n#wn-slot input.ctct-form-element{\n  width:100% !important; min-width:0 !important;\n  background:transparent !important;\n  border:1px solid var(--wn-rule) !important; border-right:none !important;\n  border-radius:0 !important;\n  color:var(--wn-ink) !important;\n  font-family:var(--wn-body) !important; font-size:15px !important;\n  line-height:1.4 !important; padding:13px 14px !important;\n  height:auto !important; margin:0 !important; box-shadow:none !important;\n}\n#wn-slot input.ctct-form-element::placeholder{ color:var(--wn-mute) !important }\n#wn-slot input.ctct-form-element:focus{\n  outline:none !important; border-color:var(--wn-red) !important;\n}\n\n#wn-slot button.ctct-form-button{\n  grid-column:2; grid-row:1; align-self:stretch;\n  border:none !important; border-radius:0 !important;\n  background:var(--wn-red) !important; color:#fff !important;\n  font-family:var(--wn-mono) !important; font-size:11.5px !important;\n  font-weight:400 !important; letter-spacing:.12em !important;\n  text-transform:uppercase !important;\n  padding:0 24px !important; margin:0 !important;\n  width:auto !important; height:auto !important; min-height:0 !important;\n  float:none !important; cursor:pointer;\n  transition:background .15s ease;\n}\n#wn-slot button.ctct-form-button:hover{ background:var(--wn-red-lt) !important }\n\n/* Required by Constant Contact. Set small. Never hidden. */\n#wn-slot #gdpr_text{ grid-column:1 / -1; margin:0 !important }\n#wn-slot #gdpr_text .ctct-gdpr-text{\n  margin:10px 0 0 !important; padding:0 !important;\n  font-family:var(--wn-body) !important;\n  font-size:10.5px !important; line-height:1.6 !important;\n  color:var(--wn-mute) !important; text-align:left !important;\n}\n#wn-slot #gdpr_text a{ color:var(--wn-dim) !important; text-decoration:underline }\n\n/* Errors span the row, under the field. */\n#wn-slot .ctct-form-error{ grid-column:1 / -1 }\n#wn-slot .ctct-form-errorMessage{\n  font-family:var(--wn-mono) !important; font-size:11px !important;\n  letter-spacing:.04em !important; color:var(--wn-red) !important;\n  margin:6px 0 0 !important; background:transparent !important;\n}\n\n/* The invisible reCAPTCHA container stays in the DOM -- removing it\n   breaks the token. It is given no height, and its badge, which floats\n   over the whole page bottom-right, is hidden. */\n#wn-slot #ctct_recaptcha_0{ grid-column:1 / -1; height:0 !important; overflow:visible }\n.grecaptcha-badge{ visibility:hidden }\n\n/* What replaces the form after a successful sign-up. */\n#wn-slot .ctct-form-success{\n  background:transparent !important; border:none !important; padding:0 !important;\n}\n#wn-slot .ctct-form-success .ctct-form-header{\n  position:static !important; width:auto !important; height:auto !important;\n  clip:auto !important; margin:0 0 6px !important; overflow:visible !important;\n  font-family:var(--wn-head) !important; font-weight:400 !important;\n  font-size:21px !important; color:var(--wn-ink) !important;\n}\n#wn-slot .ctct-form-success .ctct-form-text{\n  position:static !important; width:auto !important; height:auto !important;\n  clip:auto !important; margin:0 !important; overflow:visible !important;\n  font-family:var(--wn-body) !important; font-size:15px !important;\n  color:var(--wn-dim) !important;\n}\n#wn-slot p.ctct-form-footer{\n  font-size:10.5px !important; color:var(--wn-mute) !important;\n  margin:8px 0 0 !important;\n}\n\n@media (max-width:900px){ .wn-in{ grid-template-columns:1fr; gap:22px } }\n@media (max-width:420px){\n  /* At phone width a 24px-padded button beside a field leaves the field\n     too narrow to read what you typed. Stack them. */\n  #wn-slot form.ctct-form-custom{ grid-template-columns:1fr }\n  #wn-slot button.ctct-form-button{ grid-column:1; grid-row:2; padding:14px !important }\n  #wn-slot input.ctct-form-element{ border-right:1px solid var(--wn-rule) !important }\n}",
   "events": "/* Homepage tokens, not the calendar's. This band sits on the dark\n   ground with two paper panels laid on it, so the type colors are\n   fixed here rather than inherited from whatever Squarespace section\n   the block lands in. */\n#wpfw-se{\n  --se-red:#C81210; --se-red-lt:#F5463B;\n  --se-paper:#F5F0E7; --se-paper-2:#EBE3D6;\n  --se-ink:#16110D; --se-dim:#4C4239; --se-mute:#6B5D50;\n  --se-rule:#D6CBBA;\n  --se-head:\"Young Serif\",Georgia,serif;\n  --se-body:\"Bitter\",Georgia,\"Times New Roman\",serif;\n  --se-mono:\"IBM Plex Mono\",ui-monospace,Menlo,monospace;\n  font-family:var(--se-body); color:var(--se-ink);\n}\n#wpfw-se *,#wpfw-se *::before,#wpfw-se *::after{box-sizing:border-box}\n#wpfw-se [hidden]{display:none !important}\n\n.wpfw-se-grid{\n  display:grid; grid-template-columns:1.3fr 1fr; gap:40px;\n  align-items:start;\n}\n\n/* ---------- the feature ---------- */\n.wpfw-se-feature{\n  background:var(--se-paper); border:1px solid var(--se-rule);\n  padding:0; overflow:hidden;\n}\n.wpfw-se-img{\n  position:relative; display:grid; place-items:center;\n  aspect-ratio:16/9; max-width:100%; overflow:hidden;\n  border-bottom:1px solid var(--se-rule);\n  background:\n    radial-gradient(120% 95% at 20% 16%, rgba(245,70,59,.50), transparent 60%),\n    radial-gradient(105% 85% at 84% 80%, rgba(201,151,63,.40), transparent 58%),\n    linear-gradient(158deg,#1D100C 0%,#0C0A09 56%,#27130F 100%);\n}\n.wpfw-se-img::after{\n  content:\"\"; position:absolute; inset:0;\n  background-image:radial-gradient(rgba(239,231,220,.15) 1px, transparent 1.15px);\n  background-size:7px 7px;\n}\n.wpfw-se-img img{\n  position:absolute; inset:0; z-index:1;\n  width:100%; height:100%; object-fit:cover; display:block;\n}\n.wpfw-se-mark{\n  position:relative; z-index:1; text-align:center;\n  display:flex; flex-direction:column; align-items:center; gap:7px;\n}\n.wpfw-se-mark b{ font-family:var(--se-head); font-weight:400; font-size:26px; line-height:1; color:#EFE7DC }\n.wpfw-se-mark i{ font-family:var(--se-mono); font-style:normal; font-weight:600; font-size:12px; letter-spacing:.04em; color:var(--se-red-lt) }\n\n.wpfw-se-body{ padding:30px }\n.wpfw-se-status{\n  display:inline-block; margin-bottom:12px;\n  font-family:var(--se-mono); font-size:10px; font-weight:600;\n  letter-spacing:.14em; text-transform:uppercase;\n  color:#fff; background:var(--se-red); padding:4px 9px;\n}\n.wpfw-se-row .wpfw-se-status{ margin:0 0 6px; font-size:9px; padding:3px 7px }\n.wpfw-se-when{\n  font-family:var(--se-mono); font-size:11px; letter-spacing:.14em;\n  text-transform:uppercase; color:var(--se-red); margin-bottom:12px;\n}\n.wpfw-se-feature h3{\n  color:var(--se-ink);\n  font-family:var(--se-head); font-weight:400;\n  font-size:clamp(24px,3.2vw,34px); line-height:1.1;\n  margin:0 0 14px; text-wrap:balance;\n}\n.wpfw-se-feature p.blurb{ margin:0 0 20px; color:var(--se-dim); max-width:48ch }\n.wpfw-se-facts{\n  list-style:none; margin:0 0 24px; padding:0;\n  display:flex; flex-direction:column; gap:7px;\n  font-family:var(--se-mono); font-size:12.5px; color:var(--se-mute);\n}\n.wpfw-se-facts li{ display:flex; gap:12px }\n.wpfw-se-facts b{ color:var(--se-dim); font-weight:500; min-width:78px; flex:none }\n\n.wpfw-se-btns{ display:flex; gap:12px; flex-wrap:wrap }\n.wpfw-se-btn{\n  display:inline-block; font-family:var(--se-mono); font-size:11.5px;\n  letter-spacing:.12em; text-transform:uppercase; text-decoration:none;\n  padding:13px 22px; background:var(--se-red); color:#fff;\n  transition:background .15s ease;\n}\n.wpfw-se-btn:hover{ background:var(--se-red-lt); color:#fff }\n.wpfw-se-btn.ghost{ background:transparent; border:1px solid var(--se-rule); color:var(--se-ink) }\n.wpfw-se-btn.ghost:hover{ background:var(--se-paper-2); border-color:var(--se-mute); color:var(--se-ink) }\n\n/* ---------- the list ---------- */\n.wpfw-se-panel{\n  background:var(--se-paper); border:1px solid var(--se-rule);\n  padding:26px 24px;\n}\n.wpfw-se-row{\n  display:grid; grid-template-columns:auto 1fr; gap:18px;\n  padding:18px 0; border-top:1px solid var(--se-rule);\n  text-decoration:none; color:inherit;\n}\n.wpfw-se-row:first-child{ border-top:none; padding-top:0 }\n.wpfw-se-row:hover h4{ color:var(--se-red) }\n.wpfw-se-date{\n  font-family:var(--se-mono); font-size:10px; letter-spacing:.1em;\n  text-transform:uppercase; text-align:center; line-height:1.5;\n  color:var(--se-mute); border:1px solid var(--se-rule);\n  padding:8px 10px; min-width:58px; align-self:start;\n}\n.wpfw-se-date b{\n  display:block; font-family:var(--se-head); font-weight:400;\n  font-size:21px; line-height:1.1; color:var(--se-ink); letter-spacing:0;\n}\n.wpfw-se-row h4{\n  color:var(--se-ink);\n  font-family:var(--se-head); font-weight:400; font-size:18px;\n  line-height:1.2; margin:0 0 5px; text-wrap:balance;\n  transition:color .15s ease;\n}\n.wpfw-se-row .where{ margin:0 0 6px; font-family:var(--se-mono); font-size:11.5px; color:var(--se-mute) }\n.wpfw-se-row p{ margin:0; font-size:13.5px; color:var(--se-dim); line-height:1.55 }\n\n.wpfw-se-none{\n  font-size:13.5px; line-height:1.6; color:var(--se-mute);\n  border:1px dashed var(--se-rule); padding:16px 18px; margin:0;\n}\n.wpfw-se-foot{\n  margin-top:22px; padding-top:18px; border-top:1px solid var(--se-rule);\n  display:flex; gap:14px; flex-wrap:wrap; align-items:center;\n}\n.wpfw-se-link{\n  font-family:var(--se-mono); font-size:11.5px; letter-spacing:.11em;\n  text-transform:uppercase; text-decoration:none; color:var(--se-ink);\n  border-bottom:1px solid var(--se-red); padding-bottom:3px; white-space:nowrap;\n}\n.wpfw-se-link:hover{ color:var(--se-red) }\n\n@media (max-width:900px){\n  .wpfw-se-grid{ grid-template-columns:1fr; gap:32px }\n}\n@media (max-width:560px){\n  .wpfw-se-body{ padding:24px 20px }\n  .wpfw-se-panel{ padding:22px 18px }\n}",
@@ -60,6 +61,7 @@
 };
   var MARKUP = {
   "hero": "<header id=\"wpfw-hero\">\n  <canvas id=\"wh-wave\" aria-hidden=\"true\"></canvas>\n\n  <div class=\"wh-in\">\n\n    <div class=\"wh-lockup\">\n      <div class=\"wh-kicker\">Washington, DC &middot; Since 1977</div>\n      <h1>\n        <span class=\"wh-l1\">WPFW</span>\n        <span class=\"wh-l2\">Jazz and Justice</span>\n        <span class=\"wh-l3\">89.3</span>\n      </h1>\n      <p>Where music and message share a microphone. Forty-nine years of community radio, run by the people who listen to it.</p>\n    </div>\n\n    \n    <div class=\"wh-card\" id=\"wh-card\">\n      <div class=\"wh-card-head\">\n        <span class=\"wh-dot\">On air now</span>\n        <span class=\"wh-elapsed\" id=\"wh-elapsed\"></span>\n      </div>\n\n      <div class=\"wh-body\">\n        <div class=\"wh-art\" id=\"wh-art\">\n          <span class=\"wh-mark\"><b>WPFW</b><i>89.3</i></span>\n        </div>\n        <div class=\"wh-id\">\n          <h2 id=\"wh-show\">89.3 FM</h2>\n          <p class=\"wh-dj\" id=\"wh-dj\"></p>\n          <p class=\"wh-desc\" id=\"wh-desc\">Jazz and Justice radio, live from Washington, DC.</p>\n        </div>\n        <button class=\"wh-play\" id=\"wh-play\" type=\"button\" aria-label=\"Listen live\">&#9654;</button>\n      </div>\n\n      \n      <p class=\"wh-track\" id=\"wh-track\" hidden></p>\n\n      <div class=\"wh-prog\"><i id=\"wh-bar\"></i></div>\n      <div class=\"wh-times\"><span id=\"wh-start\"></span><span id=\"wh-end\"></span></div>\n\n      <div class=\"wh-next\" id=\"wh-next\" hidden>\n        <span class=\"wh-next-lbl\">Up next</span>\n        <span id=\"wh-next-txt\"></span>\n      </div>\n    </div>\n\n  </div>\n</header>",
+  "vote": "<div id=\"wpfw-vote\" hidden>\n  <div class=\"wv-grid\">\n\n    <div class=\"wv-say\">\n      <p class=\"wv-lede\">WPFW's board is elected by the people who pay for it. That is the whole\n        arrangement, and it only works if they vote.</p>\n      <p class=\"wv-quorum\" id=\"wv-quorum\"></p>\n    </div>\n\n    <div class=\"wv-do\">\n      <a class=\"wv-btn\" href=\"https://elections.pacifica.org/emails-your-voting-link-place/\">Find my ballot</a>\n      <a class=\"wv-btn ghost\" href=\"https://elections.pacifica.org/2026-candidates/\">See the candidates</a>\n      <a class=\"wv-btn ghost\" href=\"https://elections.pacifica.org/membership-eligibility/\">Can I vote?</a>\n      <p class=\"wv-fine\">Look for <b>&ldquo;Vote Now: Pacifica Foundation&rdquo;</b> from\n        invitations@mail.electionbuddy.com. If it is not there, write to\n        <a href=\"mailto:pacifica@electionbuddy.com\">pacifica@electionbuddy.com</a> and they will resend it.</p>\n    </div>\n\n  </div>\n</div>",
   "missed": "<div id=\"wpfw-missed\" hidden>\n  <div class=\"wm-rail\" id=\"wm-rail\"></div>\n  <div class=\"wm-foot\">\n    <a class=\"wm-link\" id=\"wm-more\" href=\"/archive\">Browse the full on-demand archive &rarr;</a>\n  </div>\n  <audio id=\"wm-audio\" preload=\"none\"></audio>\n</div>",
   "signup": "<section id=\"wpfw-signup\">\n  <div class=\"wn-in\">\n\n    <div class=\"wn-say\">\n      <h2>The station in your inbox.</h2>\n      <p>What&rsquo;s coming up on 89.3, who to listen for, the Music and Movement Moment, and what&rsquo;s happening around the District.</p>\n    </div>\n\n    <div id=\"wn-slot\">\n      <div class=\"ctct-inline-form\" data-form-id=\"ecfbf897-b807-4ef1-9252-967493a5e229\"></div>\n    </div>\n\n  </div>\n</section>",
   "events": "<div id=\"wpfw-se\" hidden>\n  <div class=\"wpfw-se-grid\">\n\n    \n    <article class=\"wpfw-se-feature\" id=\"wpfw-se-feature\"></article>\n\n    \n    <div class=\"wpfw-se-panel\" id=\"wpfw-se-panel\"></div>\n\n  </div>\n</div>",
@@ -74,6 +76,15 @@
     "ground": "night",
     "stamp": null,
     "title": null
+  },
+  {
+    "key": "vote",
+    "ground": "alert",
+    "stamp": [
+      "Voting is open",
+      "Pacifica election"
+    ],
+    "title": "The ballot is already in your inbox."
   },
   {
     "key": "missed",
@@ -169,6 +180,17 @@
     "  --tile-bg:#E1D7C7; --hover:#F9E9E2; --red-text:#C81210;",
     "}",
     ".wh-band.wh-paper2{ --surface:#EBE3D6; --surface-2:#E1D7C7; }",
+    /* One band gets a ground of its own: a deadline that is on the page
+       for a few days and should not read as furniture. Deep red rather
+       than the brand red, which is reserved for buttons and would leave
+       nothing to put on top of it. */
+    ".wh-band.wh-alert{",
+    "  color:#F7EFE7;",
+    "  --surface:#8E0F0D; --surface-2:#7C0D0B; --surface-3:#6B0B09;",
+    "  --fg:#F7EFE7; --fg-dim:#F0C9C4; --fg-mute:#E0A9A4;",
+    "  --rule:rgba(247,239,231,.28); --rule-soft:rgba(247,239,231,.16);",
+    "  --red-text:#FFD9D5;",
+    "}",
     ".wh-band *, .wh-band *::before, .wh-band *::after{ box-sizing:border-box }",
     ".wh-band [hidden]{ display:none !important }",
     ".wh-band a{ color:inherit }",
@@ -254,7 +276,8 @@
 
   function bandHtml(b) {
     var ground = b.ground === 'paper'  ? ' wh-paper'
-               : b.ground === 'paper2' ? ' wh-paper wh-paper2' : '';
+               : b.ground === 'paper2' ? ' wh-paper wh-paper2'
+               : b.ground === 'alert'  ? ' wh-alert' : '';
     var head = '';
     if (b.stamp) {
       head += '<div class="wh-stamp"><b>' + esc(b.stamp[0]) + '</b>' +
@@ -482,6 +505,64 @@
   size(); draw();
   if (!still) requestAnimationFrame(frame);
   window.addEventListener('resize', function () { size(); draw(); });
+})();
+  }
+
+  function boot_vote() {
+(function () {
+  'use strict';
+  if (window.__wpfwVoteInit) return;
+  window.__wpfwVoteInit = true;
+
+  /* ===================== CONFIG ===================== */
+  /* 2026-09-30 23:59 Pacific. Written as an absolute offset so it does not
+     depend on the visitor's clock being in any particular zone. PDT is
+     UTC-7 on that date. */
+  var CLOSES = new Date('2026-09-30T23:59:00-07:00').getTime();
+  /* Article 3 § 7 allows the election to run a further 24 hours if quorum
+     is short, so the band stays up that long rather than vanishing while
+     voting is still open. */
+  var GRACE_MS = 24 * 60 * 60 * 1000;
+  /* The last figure the election office published, and when. Both appear
+     in the copy: an undated statistic is not evidence. */
+  var QUORUM_ASOF = 'September 11';
+  /* ================================================== */
+
+  var root = document.getElementById('wpfw-vote');
+  if (!root) return;
+
+  var now = Date.now();
+
+  /* Past the extension: take the whole band down. Nobody remembers to
+     delete an election notice, and a dead one is worse than none. */
+  if (now > CLOSES + GRACE_MS) { root.remove(); return; }
+
+  var q = document.getElementById('wv-quorum');
+  if (q) {
+    q.innerHTML = 'Voting closes <b>September 30 at 11:59 PM Pacific</b>. ' +
+      'As of ' + QUORUM_ASOF + ' the election office reported turnout at ' +
+      '<b>a tenth of the quorum</b> the bylaws require &mdash; which means this ' +
+      'can fail for want of votes rather than want of candidates.';
+  }
+
+  root.hidden = false;
+
+  /* The eyebrow counts down. The bundle writes the stamp, so the band
+     hands it the right words rather than the stamp guessing. */
+  root.setAttribute('data-stamp-left', (function () {
+    if (now > CLOSES) return 'Final hours';
+    /* Counted in calendar days in Pacific time, not in elapsed hours.
+       On the 29th, a deadline late on the 30th is "tomorrow" to a reader
+       even though it is nearly two full days away, and "2 days left"
+       against a ballot closing tomorrow night reads as slack. */
+    var PT = { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit' };
+    var dayOf = function (ms) { return new Date(ms).toLocaleDateString('en-CA', PT); };
+    var today = dayOf(now), close = dayOf(CLOSES);
+    if (today === close) return 'Closes tonight';
+    var oneDay = dayOf(now + 86400000);
+    if (oneDay === close) return 'Closes tomorrow';
+    return Math.ceil((CLOSES - now) / 86400000) + ' days left';
+  })());
 })();
   }
 
@@ -1310,6 +1391,7 @@
 
   var BOOT = {
     hero:   boot_hero,
+    vote:   boot_vote,
     missed: boot_missed,
     signup: boot_signup,
     events: boot_events,
@@ -1325,6 +1407,7 @@
      /news unreachable. */
   var ROOT_ID = {
     hero:   'wpfw-hero',
+    vote:   'wpfw-vote',
     missed: 'wpfw-missed',
     signup: 'wpfw-signup',
     events: 'wpfw-se',
@@ -1338,6 +1421,18 @@
     var band = null;
     for (var i = 0; i < BANDS.length; i++) if (BANDS[i].key === key) band = BANDS[i];
     if (!band) return false;
+
+    /* A band added to the manifest but not to BOOT and ROOT_ID mounts,
+       throws, and is then removed by the watcher -- which looks exactly
+       like a feed being down. Say which map is missing it instead. */
+    if (!BOOT[key] || !ROOT_ID[key]) {
+      if (window.console && console.error) {
+        console.error('[wpfw-home] band "' + key + '" is in BANDS but missing from ' +
+          (!BOOT[key] ? 'BOOT' : '') + (!BOOT[key] && !ROOT_ID[key] ? ' and ' : '') +
+          (!ROOT_ID[key] ? 'ROOT_ID' : '') + ' in bundle.template.js');
+      }
+      return false;
+    }
     addStyle(key, STYLES[key] || '');
     host.insertAdjacentHTML('beforeend', bandHtml(band));
     var section = host.lastElementChild;
@@ -1350,6 +1445,14 @@
        an eyebrow and a headline sitting over nothing for as long as the
        timer ran -- the harness showed exactly that with /news unreachable.
        Watching the section catches it the instant it happens. */
+    /* A band may compute its own eyebrow -- the election one counts down
+       -- so after booting, the stamp takes whatever it left behind. */
+    if (section) {
+      var owner = section.querySelector('[data-stamp-left]');
+      var slot  = section.querySelector('.wh-stamp b');
+      if (owner && slot) slot.textContent = owner.getAttribute('data-stamp-left');
+    }
+
     watchEmpty(section, key);
     return true;
   }

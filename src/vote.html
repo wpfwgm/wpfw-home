@@ -1,0 +1,149 @@
+<!-- =====================================================================
+     WPFW HOMEPAGE  ·  BAND 2  ·  THE PACIFICA ELECTION
+     =====================================================================
+     No feed. Everything here is from elections.pacifica.org.
+
+     IT TAKES ITSELF DOWN. Voting closes 2026-09-30 23:59 Pacific, and the
+     bylaws allow one 24-hour extension if quorum is not met, so the band
+     stays up through that and then removes itself. An election notice
+     still on the homepage in November is worse than no notice at all, and
+     nobody remembers to delete these.
+
+     WHEN THE NEXT ELECTION COMES ROUND, change CLOSES and the three links
+     below and it runs again. Everything else is derived.
+
+     THE FACTS, all from elections.pacifica.org:
+       · voting Aug 15 – Sept 30 2026, 11:59 PM PT
+       · one 24-hour extension if quorum is short
+       · results certified Oct 15
+       · quorum is 10% of listener-sponsor members (Article 3 § 7), and
+         the election office published "10% of a 10% quorum" on Sept 11
+       · ballots come by email from invitations@mail.electionbuddy.com,
+         subject "Vote Now: Pacifica Foundation, Inc."
+       · a lost link is replaced by pacifica@electionbuddy.com
+
+     The quorum line is attributed and dated in the copy on purpose. It is
+     the most persuasive fact here and the one most likely to go stale.
+     ===================================================================== -->
+
+<div id="wpfw-vote" hidden>
+  <div class="wv-grid">
+
+    <div class="wv-say">
+      <p class="wv-lede">WPFW's board is elected by the people who pay for it. That is the whole
+        arrangement, and it only works if they vote.</p>
+      <p class="wv-quorum" id="wv-quorum"></p>
+    </div>
+
+    <div class="wv-do">
+      <a class="wv-btn" href="https://elections.pacifica.org/emails-your-voting-link-place/">Find my ballot</a>
+      <a class="wv-btn ghost" href="https://elections.pacifica.org/2026-candidates/">See the candidates</a>
+      <a class="wv-btn ghost" href="https://elections.pacifica.org/membership-eligibility/">Can I vote?</a>
+      <p class="wv-fine">Look for <b>&ldquo;Vote Now: Pacifica Foundation&rdquo;</b> from
+        invitations@mail.electionbuddy.com. If it is not there, write to
+        <a href="mailto:pacifica@electionbuddy.com">pacifica@electionbuddy.com</a> and they will resend it.</p>
+    </div>
+
+  </div>
+</div>
+
+<style>
+/* The one band with a ground of its own. It is a deadline, it is on the
+   page for a few days, and it should not look like the furniture. */
+#wpfw-vote{ font-family:var(--body); color:#F7EFE7 }
+#wpfw-vote *,#wpfw-vote *::before,#wpfw-vote *::after{ box-sizing:border-box }
+
+.wv-grid{
+  display:grid; grid-template-columns:1.25fr .75fr; gap:44px;
+  align-items:start;
+}
+.wv-lede{
+  margin:0 0 16px; font-size:17px; line-height:1.55;
+  color:#F7EFE7; max-width:46ch;
+}
+.wv-quorum{
+  margin:0; font-size:14.5px; line-height:1.6;
+  color:#F0C9C4; max-width:52ch;
+}
+.wv-quorum b{ color:#fff; font-weight:700 }
+
+.wv-do{ display:flex; flex-direction:column; gap:10px; align-items:stretch }
+.wv-btn{
+  display:block; text-align:center; text-decoration:none;
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.12em;
+  text-transform:uppercase; padding:14px 20px;
+  background:#F7EFE7; color:#8E0F0D;
+  transition:background .15s ease, color .15s ease;
+}
+.wv-btn:hover{ background:#fff; color:#8E0F0D }
+.wv-btn.ghost{
+  background:transparent; color:#F7EFE7;
+  border:1px solid rgba(247,239,231,.45);
+}
+.wv-btn.ghost:hover{ background:rgba(247,239,231,.12); color:#fff }
+.wv-fine{
+  margin:6px 0 0; font-size:12px; line-height:1.6; color:#EBBDB8;
+}
+.wv-fine b{ color:#fff; font-weight:600 }
+.wv-fine a{ color:#fff; text-decoration:underline; text-underline-offset:2px }
+
+@media (max-width:900px){ .wv-grid{ grid-template-columns:1fr; gap:26px } }
+</style>
+
+<script>
+(function () {
+  'use strict';
+  if (window.__wpfwVoteInit) return;
+  window.__wpfwVoteInit = true;
+
+  /* ===================== CONFIG ===================== */
+  /* 2026-09-30 23:59 Pacific. Written as an absolute offset so it does not
+     depend on the visitor's clock being in any particular zone. PDT is
+     UTC-7 on that date. */
+  var CLOSES = new Date('2026-09-30T23:59:00-07:00').getTime();
+  /* Article 3 § 7 allows the election to run a further 24 hours if quorum
+     is short, so the band stays up that long rather than vanishing while
+     voting is still open. */
+  var GRACE_MS = 24 * 60 * 60 * 1000;
+  /* The last figure the election office published, and when. Both appear
+     in the copy: an undated statistic is not evidence. */
+  var QUORUM_ASOF = 'September 11';
+  /* ================================================== */
+
+  var root = document.getElementById('wpfw-vote');
+  if (!root) return;
+
+  var now = Date.now();
+
+  /* Past the extension: take the whole band down. Nobody remembers to
+     delete an election notice, and a dead one is worse than none. */
+  if (now > CLOSES + GRACE_MS) { root.remove(); return; }
+
+  var q = document.getElementById('wv-quorum');
+  if (q) {
+    q.innerHTML = 'Voting closes <b>September 30 at 11:59 PM Pacific</b>. ' +
+      'As of ' + QUORUM_ASOF + ' the election office reported turnout at ' +
+      '<b>a tenth of the quorum</b> the bylaws require &mdash; which means this ' +
+      'can fail for want of votes rather than want of candidates.';
+  }
+
+  root.hidden = false;
+
+  /* The eyebrow counts down. The bundle writes the stamp, so the band
+     hands it the right words rather than the stamp guessing. */
+  root.setAttribute('data-stamp-left', (function () {
+    if (now > CLOSES) return 'Final hours';
+    /* Counted in calendar days in Pacific time, not in elapsed hours.
+       On the 29th, a deadline late on the 30th is "tomorrow" to a reader
+       even though it is nearly two full days away, and "2 days left"
+       against a ballot closing tomorrow night reads as slack. */
+    var PT = { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit' };
+    var dayOf = function (ms) { return new Date(ms).toLocaleDateString('en-CA', PT); };
+    var today = dayOf(now), close = dayOf(CLOSES);
+    if (today === close) return 'Closes tonight';
+    var oneDay = dayOf(now + 86400000);
+    if (oneDay === close) return 'Closes tomorrow';
+    return Math.ceil((CLOSES - now) / 86400000) + ' days left';
+  })());
+})();
+</script>

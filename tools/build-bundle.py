@@ -40,6 +40,13 @@ BANDS = [
     dict(key="hero",   file="hero.html",           ground="night",
          stamp=None, title=None),
 
+    # Sits high because it expires. The block overrides the left half of
+    # the stamp with a live countdown and removes the whole band once
+    # voting has closed.
+    dict(key="vote",   file="vote.html",           ground="alert",
+         stamp=("Voting is open", "Pacifica election"),
+         title="The ballot is already in your inbox."),
+
     # "Recently", not "Earlier today". Transcription runs overnight and a
     # write-up is only shown once it has been approved, so the freshest
     # thing this band can ever carry is last night. The old eyebrow
@@ -50,6 +57,7 @@ BANDS = [
 
     dict(key="signup", file="newsletter.html",     ground="paper2",
          stamp=None, title=None),
+
 
     dict(key="events", file="station-events.html", ground="night",
          stamp=("This week", "Community"),

@@ -84,6 +84,17 @@
     "  --tile-bg:#E1D7C7; --hover:#F9E9E2; --red-text:#C81210;",
     "}",
     ".wh-band.wh-paper2{ --surface:#EBE3D6; --surface-2:#E1D7C7; }",
+    /* One band gets a ground of its own: a deadline that is on the page
+       for a few days and should not read as furniture. Deep red rather
+       than the brand red, which is reserved for buttons and would leave
+       nothing to put on top of it. */
+    ".wh-band.wh-alert{",
+    "  color:#F7EFE7;",
+    "  --surface:#8E0F0D; --surface-2:#7C0D0B; --surface-3:#6B0B09;",
+    "  --fg:#F7EFE7; --fg-dim:#F0C9C4; --fg-mute:#E0A9A4;",
+    "  --rule:rgba(247,239,231,.28); --rule-soft:rgba(247,239,231,.16);",
+    "  --red-text:#FFD9D5;",
+    "}",
     ".wh-band *, .wh-band *::before, .wh-band *::after{ box-sizing:border-box }",
     ".wh-band [hidden]{ display:none !important }",
     ".wh-band a{ color:inherit }",
@@ -169,7 +180,8 @@
 
   function bandHtml(b) {
     var ground = b.ground === 'paper'  ? ' wh-paper'
-               : b.ground === 'paper2' ? ' wh-paper wh-paper2' : '';
+               : b.ground === 'paper2' ? ' wh-paper wh-paper2'
+               : b.ground === 'alert'  ? ' wh-alert' : '';
     var head = '';
     if (b.stamp) {
       head += '<div class="wh-stamp"><b>' + esc(b.stamp[0]) + '</b>' +
@@ -189,6 +201,7 @@
 
   var BOOT = {
     hero:   boot_hero,
+    vote:   boot_vote,
     missed: boot_missed,
     signup: boot_signup,
     events: boot_events,
@@ -204,6 +217,7 @@
      /news unreachable. */
   var ROOT_ID = {
     hero:   'wpfw-hero',
+    vote:   'wpfw-vote',
     missed: 'wpfw-missed',
     signup: 'wpfw-signup',
     events: 'wpfw-se',
@@ -217,6 +231,18 @@
     var band = null;
     for (var i = 0; i < BANDS.length; i++) if (BANDS[i].key === key) band = BANDS[i];
     if (!band) return false;
+
+    /* A band added to the manifest but not to BOOT and ROOT_ID mounts,
+       throws, and is then removed by the watcher -- which looks exactly
+       like a feed being down. Say which map is missing it instead. */
+    if (!BOOT[key] || !ROOT_ID[key]) {
+      if (window.console && console.error) {
+        console.error('[wpfw-home] band "' + key + '" is in BANDS but missing from ' +
+          (!BOOT[key] ? 'BOOT' : '') + (!BOOT[key] && !ROOT_ID[key] ? ' and ' : '') +
+          (!ROOT_ID[key] ? 'ROOT_ID' : '') + ' in bundle.template.js');
+      }
+      return false;
+    }
     addStyle(key, STYLES[key] || '');
     host.insertAdjacentHTML('beforeend', bandHtml(band));
     var section = host.lastElementChild;
@@ -229,6 +255,14 @@
        an eyebrow and a headline sitting over nothing for as long as the
        timer ran -- the harness showed exactly that with /news unreachable.
        Watching the section catches it the instant it happens. */
+    /* A band may compute its own eyebrow -- the election one counts down
+       -- so after booting, the stamp takes whatever it left behind. */
+    if (section) {
+      var owner = section.querySelector('[data-stamp-left]');
+      var slot  = section.querySelector('.wh-stamp b');
+      if (owner && slot) slot.textContent = owner.getAttribute('data-stamp-left');
+    }
+
     watchEmpty(section, key);
     return true;
   }
