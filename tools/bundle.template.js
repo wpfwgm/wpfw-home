@@ -97,7 +97,14 @@
     "}",
     ".wh-band *, .wh-band *::before, .wh-band *::after{ box-sizing:border-box }",
     ".wh-band [hidden]{ display:none !important }",
-    ".wh-band a{ color:inherit }",
+    /* Only links that carry no class of their own. This reset exists to
+       stop Squarespace colouring bare links inside a band, and at
+       `.wh-band a` it was specificity 0,1,1 -- which beat every block's
+       own button rule at 0,1,0 and handed them `inherit`. That put bone
+       text on the bone "Find my ballot" button, and near-black on the
+       red Details button. A classed anchor is something a block has
+       already decided about; leave it alone. */
+    ".wh-band a:not([class]){ color:inherit }",
     ".wh-band img{ max-width:100% }",
     ".wh-band :focus-visible{ outline:2px solid var(--red-lift); outline-offset:3px }",
     /* Squarespace sets no rule on these headings -- checked, nothing
